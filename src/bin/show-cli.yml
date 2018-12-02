@@ -1,0 +1,12 @@
+name: anima-kit-show
+version: "0.1.0"
+author: G Queiroz <gabrieljvnq@gmail.com>
+about: A tool for video animations
+args:
+    - INPUT:
+        help: Sets the input file to use
+        required: true
+        index: 1
+    - verbose:
+        short: v
+        help: Sets the level of verbosity
