@@ -1,8 +1,9 @@
 package AnimaKit
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInterpolator(t *testing.T) {

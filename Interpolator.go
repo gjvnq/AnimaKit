@@ -1,7 +1,5 @@
 package AnimaKit
 
-// import "fmt"
-
 type KeySegment interface {
 	StartVal() float64
 	StartTime() float64
@@ -28,15 +26,12 @@ func (self *Interpolator) ValAt(at float64) float64 {
 
 	// Find correct segment
 	for _, seg := range self.Segs {
-		// fmt.Println(seg.StartTime(), at, seg.EndTime())
 		if seg.StartTime() <= at && at < seg.EndTime() {
-			// fmt.Println("> ", seg.ValAt(at))
 			return seg.ValAt(at)
 		}
 	}
 
 	// If there is no segment, use the last value as a fixed thing
-	// fmt.Println("> ", self.Segs[len(self.Segs)-1].EndVal())
 	return self.Segs[len(self.Segs)-1].EndVal()
 }
 
@@ -86,8 +81,6 @@ func (self *LinearSegment) Set(start_time, end_time, start_val, end_val float64)
 
 	self.m = (start_val - end_val) / (start_time - end_time)
 	self.b = start_val + self.m*start_time
-
-	// fmt.Printf("Set(%f, %f, %f, %f) => m = %f b = %f\n", start_time, end_time, start_val, end_val, self.m, self.b)
 }
 
 func (self LinearSegment) ValAt(time float64) float64 {
