@@ -1,6 +1,8 @@
 package AnimaKit
 
 import (
+	"image/color"
+
 	"github.com/robertkrimen/otto"
 )
 
@@ -10,7 +12,7 @@ type HiBitStage struct {
 	Rect     Rect
 	FPS      float64
 	Children []Viz
-	BG       string
+	BG       color.NRGBA
 }
 
 func NewHiBitStage(width, height int, fps float64) *HiBitStage {
@@ -18,7 +20,7 @@ func NewHiBitStage(width, height int, fps float64) *HiBitStage {
 	ans.Rect.Width = width
 	ans.Rect.Height = height
 	ans.FPS = fps
-	ans.BG = "#000000ff"
+	ans.BG = color.NRGBA{0, 0, 0, 255}
 
 	return ans
 }
@@ -31,6 +33,10 @@ func get_HiBitStage(id otto.Value) *HiBitStage {
 }
 
 func ffi_HiBitStage_new(call otto.FunctionCall) otto.Value {
+	if len(call.ArgumentList) != 3 {
+		panicAndPrint("Wrong number of arguments for: new HiBitStage(width, height, fps)")
+	}
+
 	width, err := call.Argument(0).ToInteger()
 	panicOnError(err)
 	height, err := call.Argument(1).ToInteger()
@@ -47,14 +53,15 @@ func ffi_HiBitStage_new(call otto.FunctionCall) otto.Value {
 func ffi_HiBitStage_get_bg(call otto.FunctionCall) otto.Value {
 	stage := get_HiBitStage(call.Argument(0))
 
-	return toValueOrPanic(stage.BG)
+	return toValueOrPanic(NRGBA2hex(stage.BG))
 }
 
 func ffi_HiBitStage_set_bg(call otto.FunctionCall) otto.Value {
 	stage := get_HiBitStage(call.Argument(0))
 
 	var err error
-	stage.BG, err = call.Argument(1).ToString()
+	hex, err := call.Argument(1).ToString()
 	panicOnError(err)
+	stage.BG = hex2NRGBA(hex)
 	return otto.Value{}
 }

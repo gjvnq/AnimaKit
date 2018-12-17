@@ -1,11 +1,8 @@
 // HiBitStage(width, height, framerate)
 var stage = new HiBitStage(256, 240, 30)
-println(stage)
 
-// // Set the stage to transparent with pink fallback
-println(stage.bg)
-stage.bg = "#F0F0"
-println(stage.bg)
+// Set the stage to transparent with pink fallback
+stage.bg = "#F0FF"
 
 // var typewriter = new TypeWriter({
 //   msg: "Hello World",
