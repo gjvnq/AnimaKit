@@ -24,6 +24,8 @@ test-html: coverage.out
 
 
 animakit.a: *.go
+	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Packing bin-data..."$(ANSI_RESET)
+	go-bindata -pkg AnimaKit res/
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
 	goimports -w .
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)
