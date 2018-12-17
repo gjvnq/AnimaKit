@@ -1,10 +1,15 @@
 [package]
-name = "anima_kit"
+name = "animakit"
 version = "0.1.0"
 authors = ["G Queiroz <gabrieljvnq@gmail.com>"]
 
 [dependencies]
 sdl2 = "0.31.0"
 sdl2-unifont = "1.0.1"
-rhai = "0.8.1"
+recs = "2.0.1"
 clap = {version = "2.32", features = ["yaml"]}
+
+[dependencies.dyon]
+version = "0.36"
+default-features = false
+features = ["debug_resolve", "file"]
