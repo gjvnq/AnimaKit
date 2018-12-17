@@ -1,4 +1,7 @@
 bindata.go
+cmd/AnimaKit
+*.o
+*.a
 
 # Created by https://www.gitignore.io/api/go,linux,osx
 # Edit at https://www.gitignore.io/?templates=go,linux,osx

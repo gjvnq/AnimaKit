@@ -11,9 +11,9 @@ endif
 
 .PHONY: all test test-html docs
 
-all: animakit
+all: AnimaKit
 
-animakit: *.go
+AnimaKit: *.go
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
 	goimports -w .
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)

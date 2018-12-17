@@ -11,9 +11,9 @@ endif
 
 .PHONY: all test test-html docs
 
-all: animakit.a cmd/animakit
+all: AnimaKit.a cmd/AnimaKit
 docs:
-	xdg-open "http://localhost:6060/pkg/github.com/gjvnq/animakit/"
+	xdg-open "http://localhost:6060/pkg/github.com/gjvnq/AnimaKit/"
 docs-server:
 	godoc -http=:6060
 test: coverage.out
@@ -23,7 +23,7 @@ test-html: coverage.out
 	@$(ECHO) -e $(ANSI_BLUE)"Finished target"$(ANSI_RESET)
 
 
-animakit.a: *.go
+AnimaKit.a: *.go
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Packing bin-data..."$(ANSI_RESET)
 	go-bindata -pkg AnimaKit res/
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
@@ -34,10 +34,10 @@ animakit.a: *.go
 	go build -o $@
 	@$(ECHO) -e $(ANSI_BLUE)"["$@"] Finished target $@"$(ANSI_RESET)
 
-coverage.out: *.go animakit.a
+coverage.out: *.go AnimaKit.a
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Testing code..."$(ANSI_RESET)
 	go test -cover -coverprofile=coverage.out
 	@$(ECHO) -e $(ANSI_BLUE)"["$@"] Finished target"$(ANSI_RESET)
 
-cmd/animakit: cmd/*.go *.go
-	cd cmd && make animakit
+cmd/AnimaKit: cmd/*.go *.go
+	cd cmd && make AnimaKit
