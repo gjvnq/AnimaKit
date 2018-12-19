@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"strconv"
+	"time"
 
 	"github.com/robertkrimen/otto"
 	"github.com/veandco/go-sdl2/sdl"
@@ -72,6 +73,10 @@ func Quit() {
 	sdl.Quit()
 }
 
+func hex2uint32(hex string) uint32 {
+	return color2uint32(hex2NRGBA(hex))
+}
+
 func color2uint32(c color.Color) uint32 {
 	ans := sdl.Color{}
 	r, g, b, a := c.RGBA()
@@ -108,4 +113,8 @@ func RectFitAndCenter(src, dst sdl.Rect) *sdl.Rect {
 
 func RectFitAndCenterInSurf(src sdl.Rect, surf *sdl.Surface) *sdl.Rect {
 	return RectFitAndCenter(src, sdl.Rect{0, 0, surf.W, surf.H})
+}
+
+func unixMillis() float64 {
+	return float64(time.Now().UnixNano()) / float64(time.Millisecond)
 }

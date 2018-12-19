@@ -36,5 +36,9 @@ func main() {
 	}
 
 	// fmt.Println("Use [←] and [→] to move frame by frame and [SPACE] to play")
-	AnimaKit.PreviewWindow()
+	if ArgsOutput == "" {
+		AnimaKit.PreviewWindow()
+	} else {
+		AnimaKit.RenderTo(ArgsOutput)
+	}
 }

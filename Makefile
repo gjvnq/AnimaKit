@@ -23,7 +23,7 @@ test-html: coverage.out
 	@$(ECHO) -e $(ANSI_BLUE)"Finished target"$(ANSI_RESET)
 
 
-AnimaKit.a: *.go
+AnimaKit.a: *.go res/*
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Packing bin-data..."$(ANSI_RESET)
 	go-bindata -pkg AnimaKit res/
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
@@ -39,5 +39,5 @@ coverage.out: *.go AnimaKit.a
 	go test -cover -coverprofile=coverage.out
 	@$(ECHO) -e $(ANSI_BLUE)"["$@"] Finished target"$(ANSI_RESET)
 
-cmd/AnimaKit: cmd/*.go *.go
-	cd cmd && make AnimaKit
+cmd/AnimaKit: AnimaKit.a cmd/*.go
+	cd cmd && make -B AnimaKit
