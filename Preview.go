@@ -24,7 +24,6 @@ func PreviewWindow() {
 				break
 			case *sdl.WindowEvent:
 				if event.Type != sdl.WINDOWEVENT_MOVED {
-					println("Resized")
 					need_to_redraw = true
 				}
 			}

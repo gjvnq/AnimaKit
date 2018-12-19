@@ -100,13 +100,9 @@ func RectFitAndCenter(src, dst sdl.Rect) *sdl.Rect {
 	}
 	max_height.X = (dst.W - max_height.W) / 2
 	max_height.Y = (dst.H - max_height.H) / 2
-	fmt.Println(src, dst, max_width, max_height)
-	fmt.Println(max_width.H, dst.H, max_width.H > dst.H)
 	if max_width.H < dst.H {
-		fmt.Println(max_width)
 		return &max_width
 	}
-	fmt.Println(max_height)
 	return &max_height
 }
 

@@ -62,27 +62,15 @@ func ffi_HiBitStage_set_bg(call otto.FunctionCall) otto.Value {
 
 func (self *HiBitStage) DrawOn(frame int, final_surf *sdl.Surface) error {
 	// Create surface of output size
-	// format, err := sdl.AllocFormat(sdl.PIXELFORMAT_RGBA8888)
-	// panicOnError(err)
 	virtual_surf, err := sdl.CreateRGBSurfaceWithFormat(0, self.Rect.W, self.Rect.H, 32, sdl.PIXELFORMAT_RGBA8888)
 	panicOnError(err)
 
-	fmt.Println("Final surface", final_surf.W, final_surf.H)
-	// virtual_surf.FillRect(self.Rect.ToSDL(0, 0), color2uint32(self.BG))
-	r := &sdl.Rect{
-		X: (self.Rect.W - 64) / 2,
-		Y: (self.Rect.H - 64) / 2,
-		W: 64,
-		H: 64,
-	}
-	virtual_surf.FillRect(&self.Rect, 0x00ff00ff)
-	virtual_surf.FillRect(r, color2uint32(self.BG))
+	// Draw background
+	virtual_surf.FillRect(&self.Rect, color2uint32(self.BG))
 
-	// Copy surfaces
-	r = RectFitAndCenterInSurf(self.Rect, final_surf)
+	// Copy to output
+	r := RectFitAndCenterInSurf(self.Rect, final_surf)
 	virtual_surf.BlitScaled(nil, final_surf, r)
-
-	fmt.Println("Redrawn", r)
 
 	return nil
 }
