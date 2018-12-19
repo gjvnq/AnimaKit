@@ -50,26 +50,6 @@ func LoadScriptFromFile(path string) (*otto.Otto, error) {
 
 func jsval2string(val otto.Value) string {
 	ans := ""
-	// exp, err := val.Export()
-	// panicOnError(err)
-
-	// switch exp_val := exp.(type) {
-	// case string:
-	// 	return "\"" + exp_val + "\""
-	// case map[string]interface{}:
-	// case []interface{}:
-	// 	ans = "["
-	// 	for _, item := range exp_val {
-	// 		if i != 0 {
-	// 			ans += ", "
-	// 		}
-	// 		ans += key
-	// 	}
-	// 	ans += "]"
-	// 	return ans
-	// default:
-	// 	return val.String()
-	// }
 
 	if val.Class() == "Object" {
 		ans = "Object{"

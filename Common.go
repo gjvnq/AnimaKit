@@ -41,6 +41,7 @@ func hex2NRGBA(hex string) color.NRGBA {
 	if hex[0] == '#' {
 		hex = hex[1:]
 	}
+	ans.A = 0xFF
 	// Multiplying by 17 "doubles" the algarism. Ex: F => FF
 	if len(hex) == 3 || len(hex) == 4 {
 		ans.R = 17 * hex2uint8(string(hex[0]))
@@ -69,4 +70,46 @@ func PreLoad() {
 
 func Quit() {
 	sdl.Quit()
+}
+
+func color2uint32(c color.Color) uint32 {
+	ans := sdl.Color{}
+	r, g, b, a := c.RGBA()
+	ans.R = uint8(r)
+	ans.G = uint8(g)
+	ans.B = uint8(b)
+	ans.A = uint8(a)
+
+	return ans.Uint32()
+}
+
+func RectFitAndCenter(src, dst sdl.Rect) *sdl.Rect {
+	max_width := sdl.Rect{
+		X: 0,
+		Y: 0,
+		W: dst.W,
+		H: int32(float64(src.H) * (float64(dst.W) / float64(src.W))),
+	}
+	max_width.X = (dst.W - max_width.W) / 2
+	max_width.Y = (dst.H - max_width.H) / 2
+	max_height := sdl.Rect{
+		X: 0,
+		Y: 0,
+		W: int32(float64(src.W) * (float64(dst.H) / float64(src.H))),
+		H: dst.H,
+	}
+	max_height.X = (dst.W - max_height.W) / 2
+	max_height.Y = (dst.H - max_height.H) / 2
+	fmt.Println(src, dst, max_width, max_height)
+	fmt.Println(max_width.H, dst.H, max_width.H > dst.H)
+	if max_width.H < dst.H {
+		fmt.Println(max_width)
+		return &max_width
+	}
+	fmt.Println(max_height)
+	return &max_height
+}
+
+func RectFitAndCenterInSurf(src sdl.Rect, surf *sdl.Surface) *sdl.Rect {
+	return RectFitAndCenter(src, sdl.Rect{0, 0, surf.W, surf.H})
 }

@@ -1,35 +1,43 @@
 package AnimaKit
 
-import "github.com/robertkrimen/otto"
+import (
+	"github.com/robertkrimen/otto"
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 var TheAnimation Animation
 
 type Animation struct {
-	Rect   Rect
+	Rect   sdl.Rect
 	Length float64
 	Stage  Viz
 	FPS    float64
 }
 
+func (self *Animation) DrawOn(frame int, surface *sdl.Surface) error {
+	return self.Stage.DrawOn(frame, surface)
+
+}
+
 func ffi_Animation_get_width(call otto.FunctionCall) otto.Value {
-	return toValueOrPanic(TheAnimation.Rect.Width)
+	return toValueOrPanic(TheAnimation.Rect.W)
 }
 
 func ffi_Animation_set_width(call otto.FunctionCall) otto.Value {
 	tmp, err := call.Argument(1).ToInteger()
 	panicOnError(err)
-	TheAnimation.Rect.Width = int(tmp)
+	TheAnimation.Rect.W = int32(tmp)
 	return otto.Value{}
 }
 
 func ffi_Animation_get_height(call otto.FunctionCall) otto.Value {
-	return toValueOrPanic(TheAnimation.Rect.Height)
+	return toValueOrPanic(TheAnimation.Rect.H)
 }
 
 func ffi_Animation_set_height(call otto.FunctionCall) otto.Value {
 	tmp, err := call.Argument(1).ToInteger()
 	panicOnError(err)
-	TheAnimation.Rect.Height = int(tmp)
+	TheAnimation.Rect.H = int32(tmp)
 	return otto.Value{}
 }
 
@@ -56,8 +64,8 @@ func ffi_Animation_set_fps(call otto.FunctionCall) otto.Value {
 }
 
 func ffi_Animation_set_stage(call otto.FunctionCall) otto.Value {
-	tmp, err := call.Argument(1).ToInteger()
+	id, err := call.Argument(1).ToInteger()
 	panicOnError(err)
-	TheAnimation.Stage = mapperGet(int(tmp)).(Viz)
+	TheAnimation.Stage = mapperGet(int(id)).(Viz)
 	return otto.Value{}
 }
