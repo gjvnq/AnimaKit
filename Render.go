@@ -4,9 +4,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/veandco/go-sdl2/img"
 )
+
+var timeProgramStart float64
+
+func init() {
+	timeProgramStart = unixMillis()
+}
 
 func RenderTo(output_path string) {
 	output_path, _ = filepath.Abs(output_path)
@@ -18,16 +25,41 @@ func RenderTo(output_path string) {
 	fmt.Println("FPS:", TheAnimation.FPS)
 	fmt.Println("Length:", TheAnimation.Length)
 
-	surface := TheAnimation.NewSurface()
-	fmt.Printf("%+v\n", surface.Format)
+	var frames_to_do = make(chan int)
+
+	wg := new(sync.WaitGroup)
+	n_workers := 8
+	wg.Add(n_workers)
+	for i := 0; i < n_workers; i++ {
+		go renderWorker(output_path, frames_to_do, wg)
+	}
 	for i := 0; i < TheAnimation.Frames; i++ {
+		frames_to_do <- i
+	}
+	for i := 0; i < n_workers; i++ {
+		frames_to_do <- -1
+	}
+	full_time := unixMillis() - timeProgramStart
+	fmt.Printf("Full render finished in %f milliseconds. Average time per frame: %7.3f \n", full_time, full_time/float64(TheAnimation.Frames))
+	wg.Wait()
+}
+
+func renderWorker(dir string, input chan int, wg *sync.WaitGroup) {
+	surface := TheAnimation.NewSurface()
+	fmt.Println("Started worker")
+	for {
+		frame := <-input
+		if frame == -1 {
+			break
+		}
 		start_time := unixMillis()
 
-		fmt.Println("Rendering frame:", i)
-		frame_filename := fmt.Sprintf("%s/%05d.png", output_path, i)
-		TheAnimation.DrawOn(i, surface)
-		err := img.SavePNG(surface, frame_filename)
-		fmt.Printf("Done frame %d in %0.3f miliceonds\n", i, unixMillis()-start_time)
+		filename := fmt.Sprintf("%s/%05d.png", dir, frame)
+		TheAnimation.DrawOn(frame, surface)
+		err := img.SavePNG(surface, filename)
+		fmt.Printf("Done frame %5d in %7.3f milliseconds\n", frame, unixMillis()-start_time)
 		panicOnError(err)
 	}
+	fmt.Println("Finished worker")
+	wg.Done()
 }
