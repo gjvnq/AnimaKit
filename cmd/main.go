@@ -24,16 +24,17 @@ func init() {
 }
 
 func main() {
+	// Load SDL and stuff
+	AnimaKit.PreLoad()
+	defer AnimaKit.Quit()
+
+	// Load animation
 	_, err := AnimaKit.LoadScriptFromFile(ArgsInput)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	// value, err := vm.Call("prepareStage", nil)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return
-	// }
-	// fmt.Println(value)
+	// fmt.Println("Use [←] and [→] to move frame by frame and [SPACE] to play")
+	// AnimaKit.PreviewWindow()
 }

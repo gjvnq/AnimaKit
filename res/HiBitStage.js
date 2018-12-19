@@ -1,5 +1,5 @@
-function HiBitStage(width, height, fps) {
-  var id = ffi_HiBitStage_new(width, height, fps);
+function HiBitStage(width, height) {
+  var id = ffi_HiBitStage_new(width, height);
   return {
     get id() { return id },
     get width() { return width },

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/robertkrimen/otto"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 func panicOnError(err error) {
@@ -58,4 +59,14 @@ func hex2NRGBA(hex string) color.NRGBA {
 		}
 	}
 	return ans
+}
+
+func PreLoad() {
+	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
+		panic(err)
+	}
+}
+
+func Quit() {
+	sdl.Quit()
 }
