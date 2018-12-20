@@ -52,22 +52,22 @@ func main() {
 		if ArgOutputFile != "" {
 			cmd := exec.Command(
 				ArgFfmpeg,
-				"-y",
+				"-y", // overwrite output file
 				"-framerate",
 				fmt.Sprintf("%f", AnimaKit.TheAnimation.FPS),
 				"-i",
 				ArgOutputDir+"/%05d.png",
 				ArgOutputFile)
+			// Force color output
 			cmd.Env = append(os.Environ(),
 				"AV_LOG_FORCE_COLOR=true",
 			)
+			// Ensure output will be visible
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 			fmt.Println("Running:", cmd.Args)
-			ffmpeg_out, err := cmd.CombinedOutput()
-			if err != nil {
-				fmt.Println(err.Error())
-				return
-			}
-			fmt.Printf("%s\n", ffmpeg_out)
+			fmt.Println("--------------------------------------------------------------------------------")
+			cmd.Run()
 		}
 	}
 }
