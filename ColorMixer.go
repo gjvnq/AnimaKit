@@ -1,7 +1,6 @@
 package AnimaKit
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 
@@ -34,11 +33,8 @@ func (self ColorMixer) ValAt(at float64) sdl.Color {
 	}
 
 	// Find correct segment
-	for i, seg := range self.Segs {
+	for _, seg := range self.Segs {
 		if seg.StartTime <= at && at < seg.EndTime {
-			fmt.Println("Used segment", i, "for frame", at)
-			r, g, b, a := seg.ValAt(at).RGBA()
-			fmt.Printf("seg.ValAt(%f) = %d %d %d %d = %s = 0x%x = 0x%x\n", at, r, g, b, a, seg.ValAt(at).Hex(), color2uint32(seg.ValAt(at)), color2sdl(seg.ValAt(at)).Uint32())
 			return color2sdl(seg.ValAt(at))
 		}
 	}
@@ -52,7 +48,6 @@ func (self *ColorMixer) Clear() {
 }
 
 func (self *ColorMixer) SetFixed(hex string) {
-	fmt.Println(hex)
 	self.Segs = make([]ColorMixerSegment, 1)
 	c, err := colorful.Hex(hex)
 	panicOnError(err)
@@ -76,7 +71,6 @@ func (self *ColorMixer) FromValue(value otto.Value) {
 			keys = append(keys, val)
 		}
 		sort.Ints(keys)
-		fmt.Println("keys=", keys)
 
 		// Pre add first segment
 		if keys[0] != 0 {
@@ -112,10 +106,6 @@ func (self *ColorMixer) FromValue(value otto.Value) {
 				self.Segs[i-1].EndVal = c
 				self.Segs[i-1].EndTime = key_f64
 			}
-			fmt.Println(i, key_f64, c)
-		}
-		for _, seg := range self.Segs {
-			fmt.Printf("%+v\n", seg)
 		}
 	}
 }
