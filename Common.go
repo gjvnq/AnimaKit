@@ -3,6 +3,7 @@ package AnimaKit
 import (
 	"fmt"
 	"image/color"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -38,6 +39,12 @@ func hex2uint8(hex string) uint8 {
 }
 
 func hex2NRGBA(hex string) color.NRGBA {
+	matched, err := regexp.MatchString("^[A-Fa-f0-9]{1,8}$", "#FFF")
+	panicOnError(err)
+	if !matched {
+		panic("Invalid color: " + hex)
+	}
+
 	ans := color.NRGBA{}
 	if hex[0] == '#' {
 		hex = hex[1:]
