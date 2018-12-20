@@ -2,11 +2,11 @@ package AnimaKit
 
 import (
 	"fmt"
-	"image/color"
 	"sort"
 	"strconv"
 
 	"github.com/robertkrimen/otto"
+	"github.com/veandco/go-sdl2/sdl"
 	colorful "gopkg.in/lucasb-eyer/go-colorful.v1"
 )
 
@@ -21,17 +21,16 @@ func (self ColorMixerSegment) ValAt(at float64) colorful.Color {
 	delta_t := self.EndTime - self.StartTime
 	at = at - self.StartTime
 	t := at / delta_t
-	// return self.StartVal.BlendLab(self.EndVal, t)
-	return self.StartVal.BlendRgb(self.EndVal, t).Clamped()
+	return self.StartVal.BlendLab(self.EndVal, t).Clamped()
 }
 
 type ColorMixer struct {
 	Segs []ColorMixerSegment
 }
 
-func (self ColorMixer) ValAt(at float64) color.Color {
+func (self ColorMixer) ValAt(at float64) sdl.Color {
 	if len(self.Segs) == 0 {
-		return colorful.Color{0, 0, 0}
+		return sdl.Color{0, 0, 0, 0}
 	}
 
 	// Find correct segment
@@ -39,13 +38,13 @@ func (self ColorMixer) ValAt(at float64) color.Color {
 		if seg.StartTime <= at && at < seg.EndTime {
 			fmt.Println("Used segment", i, "for frame", at)
 			r, g, b, a := seg.ValAt(at).RGBA()
-			fmt.Printf("seg.ValAt(%f) = %d %d %d %d = %s = 0x%x\n", at, r, g, b, a, seg.ValAt(at).Hex(), color2uint32(seg.ValAt(at)))
-			return seg.ValAt(at)
+			fmt.Printf("seg.ValAt(%f) = %d %d %d %d = %s = 0x%x = 0x%x\n", at, r, g, b, a, seg.ValAt(at).Hex(), color2uint32(seg.ValAt(at)), color2sdl(seg.ValAt(at)).Uint32())
+			return color2sdl(seg.ValAt(at))
 		}
 	}
 
 	// If there is no segment, use the last value as a fixed thing
-	return self.Segs[len(self.Segs)-1].EndVal
+	return color2sdl(self.Segs[len(self.Segs)-1].EndVal)
 }
 
 func (self *ColorMixer) Clear() {
@@ -70,11 +69,17 @@ func (self *ColorMixer) FromValue(value otto.Value) {
 		self.Clear()
 
 		// Get and sort keys
-		keys := value.Object().Keys()
-		sort.Strings(keys)
+		keys := make([]int, 0)
+		for _, key := range value.Object().Keys() {
+			val, err := strconv.Atoi(key)
+			panicOnError(err)
+			keys = append(keys, val)
+		}
+		sort.Ints(keys)
+		fmt.Println("keys=", keys)
 
 		// Pre add first segment
-		if keys[0] != "0" {
+		if keys[0] != 0 {
 			self.Segs = append(self.Segs, ColorMixerSegment{
 				StartVal:  colorful.Color{0, 0, 0},
 				StartTime: 0,
@@ -86,7 +91,8 @@ func (self *ColorMixer) FromValue(value otto.Value) {
 		panicOnError(err)
 		obj := tmp.(map[string]interface{})
 		// Go in order
-		for _, key := range keys {
+		for _, key_int := range keys {
+			key := strconv.Itoa(key_int)
 			i := len(self.Segs)
 
 			// Convert value to colour
@@ -107,6 +113,9 @@ func (self *ColorMixer) FromValue(value otto.Value) {
 				self.Segs[i-1].EndTime = key_f64
 			}
 			fmt.Println(i, key_f64, c)
+		}
+		for _, seg := range self.Segs {
+			fmt.Printf("%+v\n", seg)
 		}
 	}
 }

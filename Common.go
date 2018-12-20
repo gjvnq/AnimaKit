@@ -11,7 +11,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-const PIXEL_FORMAT = sdl.PIXELFORMAT_ABGR8888
+// const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
+const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
 
 func panicOnError(err error) {
 	if err != nil {
@@ -84,6 +85,19 @@ func Quit() {
 
 func hex2uint32(hex string) uint32 {
 	return color2uint32(hex2NRGBA(hex))
+}
+
+func color2sdl(c color.Color) sdl.Color {
+	ans := sdl.Color{}
+	r, g, b, a := c.RGBA()
+	fmt.Println("color2sdl", r, g, b, a)
+	ans.R = uint8(255 * float64(r) / float64(0xffff))
+	ans.G = uint8(255 * float64(g) / float64(0xffff))
+	ans.B = uint8(255 * float64(b) / float64(0xffff))
+	ans.A = uint8(255 * float64(a) / float64(0xffff))
+	fmt.Println("color2sdl", ans.R, ans.G, ans.B, ans.A)
+
+	return ans
 }
 
 func color2uint32(c color.Color) uint32 {
