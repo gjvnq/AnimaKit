@@ -13,7 +13,7 @@ endif
 
 all: AnimaKit
 
-AnimaKit: *.go
+AnimaKit: *.go ../*.go
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
 	goimports -w .
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)

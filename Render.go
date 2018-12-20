@@ -15,7 +15,7 @@ func init() {
 	timeProgramStart = unixMillis()
 }
 
-func RenderTo(output_path string) {
+func RenderTo(output_path string, n_workers int) {
 	output_path, _ = filepath.Abs(output_path)
 	fmt.Println("Rendering to directory:", output_path)
 	err := os.MkdirAll(output_path, 0755)
@@ -24,18 +24,18 @@ func RenderTo(output_path string) {
 	fmt.Println("Total frames to render:", TheAnimation.Frames)
 	fmt.Println("FPS:", TheAnimation.FPS)
 	fmt.Println("Length:", TheAnimation.Length)
-
-	var frames_to_do = make(chan int)
+	fmt.Println("Number of workers:", n_workers)
 
 	wg := new(sync.WaitGroup)
-	n_workers := 8
 	wg.Add(n_workers)
+	var frames_to_do = make(chan int, 64)
 	for i := 0; i < n_workers; i++ {
 		go renderWorker(output_path, frames_to_do, wg)
 	}
 	for i := 0; i < TheAnimation.Frames; i++ {
 		frames_to_do <- i
 	}
+	// Tell our workers that all frames have been requested
 	for i := 0; i < n_workers; i++ {
 		frames_to_do <- -1
 	}

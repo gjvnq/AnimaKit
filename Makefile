@@ -40,4 +40,4 @@ coverage.out: *.go AnimaKit.a
 	@$(ECHO) -e $(ANSI_BLUE)"["$@"] Finished target"$(ANSI_RESET)
 
 cmd/AnimaKit: AnimaKit.a cmd/*.go
-	cd cmd && make -B AnimaKit
+	cd cmd && make AnimaKit
