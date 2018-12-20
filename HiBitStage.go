@@ -2,7 +2,6 @@ package AnimaKit
 
 import (
 	"fmt"
-	"image/color"
 
 	"github.com/robertkrimen/otto"
 	"github.com/veandco/go-sdl2/sdl"
@@ -11,14 +10,13 @@ import (
 type HiBitStage struct {
 	Rect     sdl.Rect
 	Children []Viz
-	BG       color.NRGBA
+	BG       ColorMixer
 }
 
 func NewHiBitStage(width, height int32) *HiBitStage {
 	ans := new(HiBitStage)
 	ans.Rect.W = width
 	ans.Rect.H = height
-	ans.BG = color.NRGBA{0, 0, 0, 255}
 
 	return ans
 }
@@ -47,26 +45,23 @@ func ffi_HiBitStage_new(call otto.FunctionCall) otto.Value {
 func ffi_HiBitStage_get_bg(call otto.FunctionCall) otto.Value {
 	stage := get_HiBitStage(call.Argument(0))
 
-	return toValueOrPanic(NRGBA2hex(stage.BG))
+	return toValueOrPanic(stage.BG)
 }
 
 func ffi_HiBitStage_set_bg(call otto.FunctionCall) otto.Value {
 	stage := get_HiBitStage(call.Argument(0))
 
-	var err error
-	hex, err := call.Argument(1).ToString()
-	panicOnError(err)
-	stage.BG = hex2NRGBA(hex)
+	stage.BG.FromValue(call.Argument(1))
 	return otto.Value{}
 }
 
 func (self *HiBitStage) DrawOn(frame int, final_surf *sdl.Surface) error {
 	// Create surface of output size
-	virtual_surf, err := sdl.CreateRGBSurfaceWithFormat(0, self.Rect.W, self.Rect.H, 32, sdl.PIXELFORMAT_RGBA8888)
+	virtual_surf, err := sdl.CreateRGBSurfaceWithFormat(0, self.Rect.W, self.Rect.H, 32, PIXEL_FORMAT)
 	panicOnError(err)
 
 	// Draw background
-	virtual_surf.FillRect(&self.Rect, color2uint32(self.BG))
+	virtual_surf.FillRect(&self.Rect, color2uint32(self.BG.ValAt(float64(frame))))
 
 	// Copy to output
 	r := RectFitAndCenterInSurf(self.Rect, final_surf)

@@ -11,6 +11,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+const PIXEL_FORMAT = sdl.PIXELFORMAT_ABGR8888
+
 func panicOnError(err error) {
 	if err != nil {
 		panic(err)

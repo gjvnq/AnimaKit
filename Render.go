@@ -40,8 +40,8 @@ func RenderTo(output_path string, n_workers int) {
 		frames_to_do <- -1
 	}
 	full_time := unixMillis() - timeProgramStart
-	fmt.Printf("Full render finished in %f milliseconds. Average time per frame: %7.3f \n", full_time, full_time/float64(TheAnimation.Frames))
 	wg.Wait()
+	fmt.Printf("Full render finished in %f milliseconds. Average time per frame: %7.3f \n", full_time, full_time/float64(TheAnimation.Frames))
 }
 
 func renderWorker(dir string, input chan int, wg *sync.WaitGroup) {

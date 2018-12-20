@@ -22,7 +22,7 @@ func (self *Animation) DrawOn(frame int, surface *sdl.Surface) error {
 }
 
 func (self *Animation) NewSurface() *sdl.Surface {
-	surface, err := sdl.CreateRGBSurfaceWithFormat(0, self.Rect.W, self.Rect.H, 32, sdl.PIXELFORMAT_ABGR8888)
+	surface, err := sdl.CreateRGBSurfaceWithFormat(0, self.Rect.W, self.Rect.H, 32, PIXEL_FORMAT)
 	panicOnError(err)
 	return surface
 }

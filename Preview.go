@@ -1,6 +1,8 @@
 package AnimaKit
 
 import (
+	"fmt"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -35,8 +37,11 @@ func PreviewWindow() {
 			}
 
 			need_to_redraw = false
+			fmt.Println(surface.Pitch)
+			fmt.Println(surface.Format)
 			TheAnimation.DrawOn(current_frame, surface)
 			window.UpdateSurface()
+			current_frame++
 		}
 	}
 }
