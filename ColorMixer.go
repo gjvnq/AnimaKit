@@ -1,11 +1,11 @@
 package AnimaKit
 
 import (
+	"image/color"
 	"sort"
 	"strconv"
 
 	"github.com/robertkrimen/otto"
-	"github.com/veandco/go-sdl2/sdl"
 	colorful "gopkg.in/lucasb-eyer/go-colorful.v1"
 )
 
@@ -20,27 +20,27 @@ func (self ColorMixerSegment) ValAt(at float64) colorful.Color {
 	delta_t := self.EndTime - self.StartTime
 	at = at - self.StartTime
 	t := at / delta_t
-	return self.StartVal.BlendLab(self.EndVal, t).Clamped()
+	return self.StartVal.BlendHcl(self.EndVal, t).Clamped()
 }
 
 type ColorMixer struct {
 	Segs []ColorMixerSegment
 }
 
-func (self ColorMixer) ValAt(at float64) sdl.Color {
+func (self ColorMixer) ValAt(at float64) color.Color {
 	if len(self.Segs) == 0 {
-		return sdl.Color{0, 0, 0, 0}
+		return color.RGBA{0, 0, 0, 0}
 	}
 
 	// Find correct segment
 	for _, seg := range self.Segs {
 		if seg.StartTime <= at && at < seg.EndTime {
-			return color2sdl(seg.ValAt(at))
+			return seg.ValAt(at)
 		}
 	}
 
 	// If there is no segment, use the last value as a fixed thing
-	return color2sdl(self.Segs[len(self.Segs)-1].EndVal)
+	return self.Segs[len(self.Segs)-1].EndVal
 }
 
 func (self *ColorMixer) Clear() {

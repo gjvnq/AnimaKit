@@ -87,24 +87,13 @@ func hex2uint32(hex string) uint32 {
 	return color2uint32(hex2NRGBA(hex))
 }
 
-// Yes, sometimes SDL does not convert colors properly
-func color2sdl(c color.Color) sdl.Color {
+func color2uint32(c color.Color) uint32 {
 	ans := sdl.Color{}
 	r, g, b, a := c.RGBA()
 	ans.R = uint8(255 * r / 0xffff)
 	ans.G = uint8(255 * g / 0xffff)
 	ans.B = uint8(255 * b / 0xffff)
 	ans.A = uint8(255 * a / 0xffff)
-	return ans
-}
-
-func color2uint32(c color.Color) uint32 {
-	ans := sdl.Color{}
-	r, g, b, a := c.RGBA()
-	ans.R = uint8(r)
-	ans.G = uint8(g)
-	ans.B = uint8(b)
-	ans.A = uint8(a)
 
 	return ans.Uint32()
 }
