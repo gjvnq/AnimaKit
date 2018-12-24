@@ -27,62 +27,49 @@ func PreviewWindow() {
 				running = false
 				break
 			case *sdl.KeyboardEvent:
-				fmt.Println("----------------------")
-				fmt.Println(sdl.GetKeyName(event.Keysym.Sym))
-				fmt.Println("mod", event.Keysym.Mod, event.Keysym.Mod&sdl.KMOD_SHIFT)
-				fmt.Println("speed/frame", speed, current_frame)
+				// Events using the [←] key
 				if event.Type == sdl.KEYUP && event.Keysym.Sym == sdl.K_LEFT {
 					need_to_redraw = true
 					speed = 0
 					// [SHIFT] + [←] = first frame (and pause)
 					if event.Keysym.Mod&sdl.KMOD_SHIFT != 0 {
-						fmt.Println("First frame")
 						current_frame = 0
 					}
 					// [←] = previous frame
 					if event.Keysym.Mod == sdl.KMOD_NONE {
-						fmt.Println("Previous frame")
 						current_frame--
 					}
 				}
+				// Events using the [→] key
 				if event.Type == sdl.KEYUP && event.Keysym.Sym == sdl.K_RIGHT {
 					need_to_redraw = true
 					speed = 0
 					// [SHIFT] + [→] = last frame (and pause)
 					if event.Keysym.Mod&sdl.KMOD_SHIFT != 0 {
-						fmt.Println("Last frame")
-						fmt.Println(TheAnimation.Length, TheAnimation.FPS)
 						current_frame = int(TheAnimation.Length * TheAnimation.FPS)
 					}
 					// [→] = next frame
 					if event.Keysym.Mod == sdl.KMOD_NONE {
-						fmt.Println("Next frame")
 						current_frame++
 					}
 				}
-				// [SPACE] pauses and unpauses the animation
+				// [SPACE] pauses and unpauses the animation ([SHIFT] reverses it)
 				if event.Type == sdl.KEYUP && event.Keysym.Sym == sdl.K_SPACE {
 					if event.Keysym.Mod == sdl.KMOD_NONE {
 						if speed > 0 {
 							speed = 0
-							fmt.Println("stop playing")
 						} else {
 							speed = 1
-							fmt.Println("fwd")
 						}
 						playing_last_update = unixMillis()
-						// Shift makes it play in reverse
 					} else if event.Keysym.Mod&sdl.KMOD_SHIFT != 0 {
 						if speed < 0 {
 							speed = 0
-							fmt.Println("stop playing")
 						} else {
 							speed = -1
-							fmt.Println("rev")
 						}
 					}
 				}
-				fmt.Println(speed, current_frame)
 			}
 		}
 		if speed != 0 && unixMillis()-playing_last_update >= 1000/TheAnimation.FPS {
@@ -95,7 +82,7 @@ func PreviewWindow() {
 				current_frame = 0
 				speed = 0
 			}
-			fmt.Println(current_frame)
+			fmt.Println("Frame = ", current_frame)
 			surface, err := window.GetSurface()
 			if err != nil {
 				panic(err)
