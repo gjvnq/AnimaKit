@@ -9,6 +9,7 @@ import (
 
 	"github.com/robertkrimen/otto"
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 // const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
@@ -75,6 +76,9 @@ func hex2NRGBA(hex string) color.NRGBA {
 
 func PreLoad() {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
+		panic(err)
+	}
+	if err := ttf.Init(); err != nil {
 		panic(err)
 	}
 }
