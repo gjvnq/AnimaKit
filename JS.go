@@ -3,6 +3,7 @@ package AnimaKit
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"strings"
 
@@ -10,8 +11,17 @@ import (
 )
 
 var VM = otto.New()
+var ScriptFolder = ""
+
+func fixPath(path string) string {
+	return filepath.Join(ScriptFolder, path)
+}
 
 func LoadScriptFromFile(path string) (*otto.Otto, error) {
+	path, err := filepath.Abs(path)
+	panicOnError(err)
+	ScriptFolder = filepath.Dir(path)
+
 	// Load file
 	file, err := os.Open(path)
 	if err != nil {
@@ -33,6 +43,11 @@ func LoadScriptFromFile(path string) (*otto.Otto, error) {
 	VM.Set("ffi_Animation_get_fps", ffi_Animation_get_fps)
 	VM.Set("ffi_Animation_set_fps", ffi_Animation_set_fps)
 	VM.Set("ffi_Animation_set_stage", ffi_Animation_set_stage)
+
+	VM.Set("ffi_GIF_new", ffi_GIF_new)
+	VM.Set("ffi_GIF_get_frames", ffi_GIF_get_frames)
+	VM.Set("ffi_GIF_get_keyframes", ffi_GIF_get_keyframes)
+	VM.Set("ffi_GIF_set_keyframes", ffi_GIF_set_keyframes)
 
 	// Load wrapper
 	scripts, _ := AssetDir("res")

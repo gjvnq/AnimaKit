@@ -7,7 +7,7 @@ Animation.stage.bg = {
                         0: "#89CFF0",
                         90: "#CCCCFF"
                       }
-println(Animation.stage.bg)
+// println(Animation.stage.bg)
 
 var gif = new GIF("bandits.gif")
 gif.keyframes = {
