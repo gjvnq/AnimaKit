@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"strings"
+
 	"github.com/robertkrimen/otto"
 )
 
@@ -33,9 +35,13 @@ func LoadScriptFromFile(path string) (*otto.Otto, error) {
 	VM.Set("ffi_Animation_set_stage", ffi_Animation_set_stage)
 
 	// Load wrapper
-	scripts := []string{"res/HiBitStage.js", "res/Animation.js"}
+	scripts, _ := AssetDir("res")
 	for _, script := range scripts {
-		file, err := Asset(script)
+		// Only load .js files
+		if !strings.HasSuffix(script, ".js") {
+			continue
+		}
+		file, err := Asset("res/" + script)
 		panicOnError(err)
 		_, err = VM.Run(file)
 		panicOnError(err)

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/robertkrimen/otto"
+	sdlImg "github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
@@ -80,6 +81,9 @@ func PreLoad() {
 	}
 	if err := ttf.Init(); err != nil {
 		panic(err)
+	}
+	if sdlImg.Init(sdlImg.INIT_JPG|sdlImg.INIT_PNG|sdlImg.INIT_TIF|sdlImg.INIT_WEBP) == 0 {
+		panic("failed to init sdl2-img")
 	}
 }
 

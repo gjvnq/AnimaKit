@@ -22,10 +22,11 @@ test-html: coverage.out
 	go tool cover -html=coverage.out
 	@$(ECHO) -e $(ANSI_BLUE)"Finished target"$(ANSI_RESET)
 
-
-AnimaKit.a: *.go res/*
+bindata.go: res/*
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Packing bin-data..."$(ANSI_RESET)
 	go-bindata -pkg AnimaKit res/
+	
+AnimaKit.a: bindata.go *.go
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
 	goimports -w .
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)
