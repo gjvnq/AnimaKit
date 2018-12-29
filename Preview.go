@@ -97,11 +97,11 @@ func PreviewWindow() {
 			TheAnimation.DrawOn(current_frame, surface)
 			// Print debug info
 			txt := fmt.Sprintf(
-				"Frame: %d Time: %f Speed: %d",
+				"Frame: %d Time: %f Speed: %d\nUse: [SPACE], [←], [→] and [SHIFT] combinations",
 				current_frame,
 				float64(current_frame)/TheAnimation.FPS,
 				speed)
-			txt_surf, err := font.RenderUTF8Blended(txt, sdl.Color{255, 255, 255, 255})
+			txt_surf, err := font.RenderUTF8BlendedWrapped(txt, sdl.Color{255, 255, 255, 255}, int(surface.W))
 			if err != nil {
 				panic(err)
 			}
