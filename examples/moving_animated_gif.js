@@ -11,7 +11,7 @@ Animation.stage.bg = {
 
 var gif = new GIF("bandits.gif")
 gif.keyframes = {
-  0: {x: 0, y: 0, scale: 1},
+  5: {x: 0, y: 0, scale: 1},
   90: {x: 128, y: 128, scale: 0.5}
 }
-Animation.stage.place(gif, 0) // 0 is the z index
+Animation.stage.place(gif)

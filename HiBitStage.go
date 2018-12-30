@@ -8,15 +8,16 @@ import (
 )
 
 type HiBitStage struct {
-	Rect     sdl.Rect
-	Children []Viz
-	BG       ColorMixer
+	Rect    sdl.Rect
+	Sprites []Viz
+	BG      ColorMixer
 }
 
 func NewHiBitStage(width, height int32) *HiBitStage {
 	ans := new(HiBitStage)
 	ans.Rect.W = width
 	ans.Rect.H = height
+	ans.Sprites = make([]Viz, 0)
 
 	return ans
 }
@@ -55,6 +56,13 @@ func ffi_HiBitStage_set_bg(call otto.FunctionCall) otto.Value {
 	return otto.Value{}
 }
 
+func ffi_HiBitStage_place(call otto.FunctionCall) otto.Value {
+	stage := get_HiBitStage(call.Argument(0))
+	obj := get_Viz(call.Argument(1))
+	stage.Sprites = append(stage.Sprites, obj)
+	return otto.Value{}
+}
+
 func (self *HiBitStage) DrawOn(frame int, final_surf *sdl.Surface) error {
 	// Create surface of output size
 	virtual_surf, err := sdl.CreateRGBSurfaceWithFormat(0, self.Rect.W, self.Rect.H, 32, PIXEL_FORMAT)
@@ -62,6 +70,16 @@ func (self *HiBitStage) DrawOn(frame int, final_surf *sdl.Surface) error {
 
 	// Draw background
 	virtual_surf.FillRect(&self.Rect, color2uint32(self.BG.ValAt(float64(frame))))
+
+	// Draw sprites
+	fmt.Println(self.Sprites)
+	for i, sprite := range self.Sprites {
+		fmt.Printf("Drawing %d of %d\n", i, len(self.Sprites))
+		fmt.Println(i, sprite)
+		err = sprite.DrawOn(frame, virtual_surf)
+		panicOnError(err)
+	}
+	fmt.Println("Finished sprites")
 
 	// Copy to output
 	r := RectFitAndCenterInSurf(self.Rect, final_surf)

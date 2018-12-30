@@ -3,6 +3,7 @@ package AnimaKit
 import (
 	"fmt"
 	"image/color"
+	"reflect"
 	"regexp"
 	"strconv"
 	"time"
@@ -135,4 +136,19 @@ func RectFitAndCenterInSurf(src sdl.Rect, surf *sdl.Surface) *sdl.Rect {
 
 func unixMillis() float64 {
 	return float64(time.Now().UnixNano()) / float64(time.Millisecond)
+}
+
+func num2float64(num interface{}) float64 {
+	switch val := num.(type) {
+	case int:
+		return float64(val)
+	case int64:
+		return float64(val)
+	case float32:
+		return float64(val)
+	case float64:
+		return val
+	default:
+		panic(fmt.Sprintf("Unable to convert %+v (%+v) to float64", num, reflect.TypeOf(num)))
+	}
 }

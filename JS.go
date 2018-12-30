@@ -33,6 +33,7 @@ func LoadScriptFromFile(path string) (*otto.Otto, error) {
 	VM.Set("ffi_HiBitStage_new", ffi_HiBitStage_new)
 	VM.Set("ffi_HiBitStage_get_bg", ffi_HiBitStage_get_bg)
 	VM.Set("ffi_HiBitStage_set_bg", ffi_HiBitStage_set_bg)
+	VM.Set("ffi_HiBitStage_place", ffi_HiBitStage_place)
 
 	VM.Set("ffi_Animation_get_width", ffi_Animation_get_width)
 	VM.Set("ffi_Animation_set_width", ffi_Animation_set_width)
