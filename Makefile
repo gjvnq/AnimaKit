@@ -9,7 +9,7 @@ else
 	ECHO="/bin/echo"
 endif
 
-.PHONY: all test test-html docs
+.PHONY: all test test-html docs dep-ensure
 
 all: AnimaKit.a cmd/AnimaKit
 docs:
@@ -17,6 +17,9 @@ docs:
 docs-server:
 	godoc -http=:6060
 test: coverage.out
+dep-ensure:
+	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Ensuring dependencies..."$(ANSI_RESET)
+	dep ensure
 test-html: coverage.out
 	@$(ECHO) -e $(ANSI_GREEN)"Generating coverage report..."$(ANSI_RESET)
 	go tool cover -html=coverage.out
@@ -26,7 +29,7 @@ bindata.go: res/*
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Packing bin-data..."$(ANSI_RESET)
 	go-bindata -pkg AnimaKit res/
 	
-AnimaKit.a: bindata.go *.go
+AnimaKit.a: bindata.go *.go dep-ensure
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
 	goimports -w .
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)
@@ -42,3 +45,6 @@ coverage.out: *.go AnimaKit.a
 
 cmd/AnimaKit: AnimaKit.a cmd/*.go
 	cd cmd && make AnimaKit
+
+clean:
+	-rm cmd/AnimaKit AnimaKit.a

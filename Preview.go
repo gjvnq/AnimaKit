@@ -41,7 +41,7 @@ func PreviewWindow() {
 						current_frame = 0
 					}
 					// [←] = previous frame
-					if event.Keysym.Mod == sdl.KMOD_NONE {
+					if event.Keysym.Mod&sdl.KMOD_SHIFT == 0 {
 						current_frame--
 					}
 				}
@@ -54,20 +54,21 @@ func PreviewWindow() {
 						current_frame = int(TheAnimation.Length * TheAnimation.FPS)
 					}
 					// [→] = next frame
-					if event.Keysym.Mod == sdl.KMOD_NONE {
+					if event.Keysym.Mod&sdl.KMOD_SHIFT == 0 {
 						current_frame++
 					}
 				}
 				// [SPACE] pauses and unpauses the animation ([SHIFT] reverses it)
 				if event.Type == sdl.KEYUP && event.Keysym.Sym == sdl.K_SPACE {
-					if event.Keysym.Mod == sdl.KMOD_NONE {
+					// No [SHIFT]
+					if event.Keysym.Mod&sdl.KMOD_SHIFT == 0 {
 						if speed > 0 {
 							speed = 0
 						} else {
 							speed = 1
 						}
 						playing_last_update = unixMillis()
-					} else if event.Keysym.Mod&sdl.KMOD_SHIFT != 0 {
+					} else if event.Keysym.Mod&sdl.KMOD_SHIFT != 0 { // with [SHIFT]
 						if speed < 0 {
 							speed = 0
 						} else {
