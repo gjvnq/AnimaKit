@@ -67,7 +67,6 @@ func PreviewWindow() {
 						} else {
 							speed = 1
 						}
-						playing_last_update = unixMillis()
 					} else if event.Keysym.Mod&sdl.KMOD_SHIFT != 0 { // with [SHIFT]
 						if speed < 0 {
 							speed = 0
@@ -75,6 +74,8 @@ func PreviewWindow() {
 							speed = -1
 						}
 					}
+					need_to_redraw = true
+					playing_last_update = unixMillis()
 				}
 			}
 		}
