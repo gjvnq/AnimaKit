@@ -133,6 +133,21 @@ func RectFitAndCenter(src, dst sdl.Rect) *sdl.Rect {
 	return &max_height
 }
 
+func Surface2Rect(surf *sdl.Surface) *sdl.Rect {
+	return &sdl.Rect{
+		W: surf.W,
+		H: surf.H,
+		X: 0,
+		Y: 0,
+	}
+}
+
+func RectScale(r *sdl.Rect, scale float64) *sdl.Rect {
+	r.W = int32(float64(r.W) * scale)
+	r.H = int32(float64(r.H) * scale)
+	return r
+}
+
 func RectFitAndCenterInSurf(src sdl.Rect, surf *sdl.Surface) *sdl.Rect {
 	return RectFitAndCenter(src, sdl.Rect{0, 0, surf.W, surf.H})
 }

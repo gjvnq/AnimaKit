@@ -83,8 +83,8 @@ func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
 		return nil
 	}
 
-	// r := RectFitAndCenterInSurf(frame_surf.Rect, final_surf)
-	return frame_surf.BlitScaled(nil, final_surf, nil)
+	out_rect := RectScale(Surface2Rect(frame_surf), self.Scale.ValAt(frame))
+	return frame_surf.BlitScaled(nil, final_surf, out_rect)
 }
 
 type GifSeg struct {
