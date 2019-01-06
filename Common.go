@@ -15,6 +15,8 @@ import (
 	"github.com/veandco/go-sdl2/ttf"
 )
 
+const VERSION = "0.1.0"
+
 // const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
 const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
 

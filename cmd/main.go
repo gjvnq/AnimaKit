@@ -18,6 +18,7 @@ var ArgNWorkers int = 8
 func init() {
 	// Set your program's name and description.  These appear in help output.
 	flaggy.SetName("AnimaKit")
+	flaggy.SetVersion(AnimaKit.VERSION)
 	flaggy.SetDescription("A simple animation renderer")
 	flaggy.DefaultParser.ShowHelpOnUnexpected = false
 	flaggy.DefaultParser.AdditionalHelpPrepend = "https://github.com/gjvnq/AnimaKit"
