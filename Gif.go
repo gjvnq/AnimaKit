@@ -18,6 +18,7 @@ type GIF struct {
 	Frames    []*sdl.Surface
 	LenFrames int
 	Segs      []GifSeg
+	src       string
 }
 
 func NewGIFFromFile(path string) *GIF {
@@ -38,6 +39,7 @@ func NewGIFFromFile(path string) *GIF {
 	panicOnError(err)
 
 	ans := new(GIF)
+	ans.src = path
 	ans.Frames = make([]*sdl.Surface, len(gif.Image))
 	for i, frame := range gif.Image {
 		// Copy frame pixel by pixel to an SDL surface
@@ -71,8 +73,11 @@ func (self GIF) Frame(frame float64) *sdl.Surface {
 			return self.Frames[seg.WhichFrame(frame)]
 		}
 	}
-	last_seg := self.Segs[len(self.Segs)-1]
-	return self.Frames[last_seg.WhichFrame(frame)]
+	if len(self.Segs) > 0 {
+		last_seg := self.Segs[len(self.Segs)-1]
+		return self.Frames[last_seg.WhichFrame(frame)]
+	}
+	return self.Frames[0]
 }
 
 func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
@@ -144,6 +149,9 @@ func ffi_GIF_get_keyframes(call otto.FunctionCall) otto.Value {
 func ffi_GIF_set_keyframes(call otto.FunctionCall) otto.Value {
 	gif := get_GIF(call.Argument(0))
 	map_obj := call.Argument(1).Object()
+
+	TheLog.DebugF("Setting keyframes for GIF(%s)", gif.src)
+	defer TheLog.DebugF("[FINISHED] Setting keyframes for GIF(%s)", gif.src)
 
 	// Get and sort keys
 	keys := make([]float64, 0)

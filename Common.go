@@ -9,18 +9,30 @@ import (
 	"strconv"
 	"time"
 
+	logger "github.com/gjvnq/go-logger"
 	"github.com/robertkrimen/otto"
 	sdlImg "github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
 
-const VERSION = "0.1.0"
+const VERSION = "0.1.0-dev"
 
 // const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
 const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
 
+var TheLog *logger.Logger
+
 var PosInf = math.Inf(1)
+
+func init() {
+	var err error
+	// Prepare logger
+	TheLog, err = logger.New("AnimaKit", 1)
+	if err != nil {
+		panic(err)
+	}
+}
 
 func panicOnError(err error) {
 	if err != nil {

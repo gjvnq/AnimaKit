@@ -23,6 +23,7 @@ func LoadScriptFromFile(path string) (*otto.Otto, error) {
 	ScriptFolder = filepath.Dir(path)
 
 	// Load file
+	TheLog.InfoF("Loading animation script from: %s", path)
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -68,8 +69,10 @@ func LoadScriptFromFile(path string) (*otto.Otto, error) {
 	}
 
 	// Execute it
+	TheLog.InfoF("Running animation script from: %s", path)
 	_, err = VM.Run(file)
 	panicOnError(err)
+	TheLog.InfoF("[FINISHED] Ran animation script from: %s", path)
 
 	return VM, nil
 }

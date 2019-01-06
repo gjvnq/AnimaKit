@@ -69,6 +69,7 @@ type Image struct {
 	ScalableBase
 	VisibleBase
 	Surface *sdl.Surface
+	src     string
 }
 
 func NewImageFromFile(path string) *Image {
@@ -80,6 +81,7 @@ func NewImageFromFile(path string) *Image {
 
 	rwops := sdl.RWFromFile(path, "r")
 	ans := new(Image)
+	ans.src = path
 	err = nil
 	switch getImgFormat(rwops) {
 	case IMG_GIF:
@@ -150,6 +152,9 @@ func ffi_Image_get_keyframes(call otto.FunctionCall) otto.Value {
 func ffi_Image_set_keyframes(call otto.FunctionCall) otto.Value {
 	img := get_Image(call.Argument(0))
 	map_obj := call.Argument(1).Object()
+
+	TheLog.DebugF("Setting keyframes for Image(%s)", img.src)
+	defer TheLog.DebugF("[FINISHED] Setting for Image(%s)", img.src)
 
 	// Get and sort keys
 	keys := make([]float64, 0)

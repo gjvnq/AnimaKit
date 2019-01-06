@@ -44,3 +44,7 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/gjvnq/go-logger"
+  revision = "1647ae0ecd78fdfbc7c41dbc499eafa3b2a0ffab"

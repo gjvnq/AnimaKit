@@ -2,6 +2,13 @@
 
 
 [[projects]]
+  digest = "1:9d7e81eaacdace5caded51b99e475c8c014b8c57f469f9cc334f3ebc1fa11d69"
+  name = "github.com/gjvnq/go-logger"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "1647ae0ecd78fdfbc7c41dbc499eafa3b2a0ffab"
+
+[[projects]]
   digest = "1:2f7d86b837288de980026af93be9a6fd9797c6b32f79af4484bc73f2e57b4ac4"
   name = "github.com/integrii/flaggy"
   packages = ["."]
@@ -59,6 +66,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/gjvnq/go-logger",
     "github.com/integrii/flaggy",
     "github.com/robertkrimen/otto",
     "github.com/veandco/go-sdl2/img",
