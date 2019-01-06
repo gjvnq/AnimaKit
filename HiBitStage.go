@@ -63,7 +63,7 @@ func ffi_HiBitStage_place(call otto.FunctionCall) otto.Value {
 	return otto.Value{}
 }
 
-func (self *HiBitStage) DrawOn(frame int, final_surf *sdl.Surface) error {
+func (self *HiBitStage) DrawOn(frame float64, final_surf *sdl.Surface) error {
 	// Create surface of output size
 	virtual_surf, err := sdl.CreateRGBSurfaceWithFormat(0, self.Rect.W, self.Rect.H, 32, PIXEL_FORMAT)
 	panicOnError(err)

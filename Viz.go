@@ -6,7 +6,7 @@ import (
 )
 
 type Viz interface {
-	DrawOn(frame int, surface *sdl.Surface) error
+	DrawOn(frame float64, surface *sdl.Surface) error
 }
 
 func get_Viz(id otto.Value) Viz {

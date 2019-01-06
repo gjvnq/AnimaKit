@@ -28,11 +28,11 @@ func RenderTo(output_path string, n_workers int) {
 
 	wg := new(sync.WaitGroup)
 	wg.Add(n_workers)
-	var frames_to_do = make(chan int, 64)
+	var frames_to_do = make(chan float64, 64)
 	for i := 0; i < n_workers; i++ {
 		go renderWorker(output_path, frames_to_do, wg)
 	}
-	for i := 0; i < TheAnimation.Frames; i++ {
+	for i := 0.0; i < TheAnimation.Frames; i++ {
 		frames_to_do <- i
 	}
 	// Tell our workers that all frames have been requested
@@ -44,7 +44,7 @@ func RenderTo(output_path string, n_workers int) {
 	fmt.Printf("Full render finished in %f milliseconds. Average time per frame: %7.3f \n", full_time, full_time/float64(TheAnimation.Frames))
 }
 
-func renderWorker(dir string, input chan int, wg *sync.WaitGroup) {
+func renderWorker(dir string, input chan float64, wg *sync.WaitGroup) {
 	surface := TheAnimation.NewSurface()
 	fmt.Println("Started worker")
 	for {
@@ -54,7 +54,7 @@ func renderWorker(dir string, input chan int, wg *sync.WaitGroup) {
 		}
 		start_time := unixMillis()
 
-		filename := fmt.Sprintf("%s/%05d.png", dir, frame)
+		filename := fmt.Sprintf("%s/%05d.png", dir, int(frame))
 		TheAnimation.DrawOn(frame, surface)
 		err := img.SavePNG(surface, filename)
 		fmt.Printf("Done frame %5d in %7.3f milliseconds\n", frame, unixMillis()-start_time)

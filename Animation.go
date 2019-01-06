@@ -10,12 +10,12 @@ var TheAnimation Animation
 type Animation struct {
 	Rect   sdl.Rect
 	Length float64
-	Frames int
+	Frames float64
 	Stage  Viz
 	FPS    float64
 }
 
-func (self *Animation) DrawOn(frame int, surface *sdl.Surface) error {
+func (self *Animation) DrawOn(frame float64, surface *sdl.Surface) error {
 	// Alpha fill just in case
 	surface.FillRect(&sdl.Rect{0, 0, surface.W, surface.H}, hex2uint32("#0000"))
 	return self.Stage.DrawOn(frame, surface)
@@ -28,7 +28,7 @@ func (self *Animation) NewSurface() *sdl.Surface {
 }
 
 func (self *Animation) updateFrames() {
-	self.Frames = int(self.Length * self.FPS)
+	self.Frames = self.Length * self.FPS
 }
 
 func ffi_Animation_get_width(call otto.FunctionCall) otto.Value {

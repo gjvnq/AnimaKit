@@ -96,7 +96,7 @@ func PreviewWindow() {
 			}
 
 			need_to_redraw = false
-			TheAnimation.DrawOn(current_frame, surface)
+			TheAnimation.DrawOn(float64(current_frame), surface)
 			// Print debug info
 			txt := fmt.Sprintf(
 				"Frame: %d Time: %f Speed: %d\nUse: [SPACE], [←], [→] and [SHIFT] combinations",

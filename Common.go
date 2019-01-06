@@ -3,6 +3,7 @@ package AnimaKit
 import (
 	"fmt"
 	"image/color"
+	"math"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -16,6 +17,8 @@ import (
 
 // const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
 const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
+
+var PosInf = math.Inf(1)
 
 func panicOnError(err error) {
 	if err != nil {

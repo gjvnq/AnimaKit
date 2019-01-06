@@ -18,8 +18,10 @@ docs-server:
 	godoc -http=:6060
 test: coverage.out
 dep-ensure:
+ifneq ($(FAST_MAKE),1)
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Ensuring dependencies..."$(ANSI_RESET)
 	dep ensure
+endif
 test-html: coverage.out
 	@$(ECHO) -e $(ANSI_GREEN)"Generating coverage report..."$(ANSI_RESET)
 	go tool cover -html=coverage.out
@@ -30,8 +32,10 @@ bindata.go: res/*
 	go-bindata -pkg AnimaKit res/
 	
 AnimaKit.a: bindata.go *.go dep-ensure
+ifneq ($(FAST_MAKE),1)
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
 	goimports -w .
+endif
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)
 	go fmt
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Compiling code..."$(ANSI_RESET)
