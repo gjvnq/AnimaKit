@@ -12,7 +12,9 @@ Animation.stage.bg = {
 var gif = new GIF("bandits.gif")
 gif.keyframes = {
   1: {visible: false},
-  5: {x: 0, y: 0, scale: 1, visible: true},
-  90: {x: 128, y: 128, scale: 0.5}
+  5: {scale: 1, visible: true},
+  30: {x: 200},
+  60: {y: 200, scale: 1, visible: true},
+  90: {x: 0, y: 0, scale: 2}
 }
 Animation.stage.place(gif)

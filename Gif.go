@@ -84,6 +84,9 @@ func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
 	}
 
 	out_rect := RectScale(Surface2Rect(frame_surf), self.Scale.ValAt(frame))
+	out_rect.X = int32(self.X.ValAt(frame))
+	out_rect.Y = int32(self.Y.ValAt(frame))
+	out_rect = UserPos2SDLPos(out_rect, final_surf)
 	return frame_surf.BlitScaled(nil, final_surf, out_rect)
 }
 

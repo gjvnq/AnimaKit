@@ -148,6 +148,17 @@ func RectScale(r *sdl.Rect, scale float64) *sdl.Rect {
 	return r
 }
 
+func UserPos2SDLPos(out_rect *sdl.Rect, final_surf *sdl.Surface) *sdl.Rect {
+	final_rect := Surface2Rect(final_surf)
+
+	out_rect.X += final_rect.W / 2
+	out_rect.Y += final_rect.H / 2
+	out_rect.X -= out_rect.W / 2
+	out_rect.Y -= out_rect.H / 2
+
+	return out_rect
+}
+
 func RectFitAndCenterInSurf(src sdl.Rect, surf *sdl.Surface) *sdl.Rect {
 	return RectFitAndCenter(src, sdl.Rect{0, 0, surf.W, surf.H})
 }

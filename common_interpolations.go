@@ -1,7 +1,5 @@
 package AnimaKit
 
-import "fmt"
-
 type PositionableBase struct {
 	X MultiInterpᐸF64ᐳ
 	Y MultiInterpᐸF64ᐳ
@@ -41,6 +39,30 @@ func (self *PositionableBase) pos_parse(sorted_keys []float64, key_frame_spec ma
 			StartVal:   1,
 			EndVal:     1,
 		})
+	}
+	for _, key := range sorted_keys {
+		params := key_frame_spec[key]
+
+		if _, ok := params["x"]; ok {
+			// Add key frame
+			self.X.FixLast(key, num2float64(params["x"]))
+			self.X.Append(InterpSegᐸF64ᐳ{
+				StartFrame: key,
+				EndFrame:   PosInf,
+				StartVal:   num2float64(params["x"]),
+				EndVal:     num2float64(params["x"]),
+			})
+		}
+		if _, ok := params["y"]; ok {
+			// Add key frame
+			self.Y.FixLast(key, num2float64(params["y"]))
+			self.Y.Append(InterpSegᐸF64ᐳ{
+				StartFrame: key,
+				EndFrame:   PosInf,
+				StartVal:   num2float64(params["y"]),
+				EndVal:     num2float64(params["y"]),
+			})
+		}
 	}
 }
 
@@ -107,5 +129,4 @@ func (self *VisibleBase) visible_parse(sorted_keys []float64, key_frame_spec map
 			Val:   params["visible"].(bool),
 		})
 	}
-	fmt.Println(self.Visible.Segs)
 }
