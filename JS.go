@@ -50,6 +50,10 @@ func LoadScriptFromFile(path string) (*otto.Otto, error) {
 	VM.Set("ffi_GIF_get_keyframes", ffi_GIF_get_keyframes)
 	VM.Set("ffi_GIF_set_keyframes", ffi_GIF_set_keyframes)
 
+	VM.Set("ffi_Image_new", ffi_Image_new)
+	VM.Set("ffi_Image_get_keyframes", ffi_Image_get_keyframes)
+	VM.Set("ffi_Image_set_keyframes", ffi_Image_set_keyframes)
+
 	// Load wrapper
 	scripts, _ := AssetDir("res")
 	for _, script := range scripts {

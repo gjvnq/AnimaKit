@@ -24,13 +24,14 @@ func NewGIFFromFile(path string) *GIF {
 	path = fixPath(path)
 
 	file, err := os.Open(path)
+	defer file.Close()
 	panicOnError(err)
 
 	rwops := sdl.RWFromFile(path, "r")
 	format := getImgFormat(rwops)
 
 	if format != IMG_GIF {
-		panic("unimplemented format: " + strconv.Itoa(format))
+		panic("image is not a GIF: " + path)
 	}
 
 	gif, err := gif_lib.DecodeAll(file)
@@ -57,6 +58,10 @@ func NewGIFFromFile(path string) *GIF {
 		ans.Frames[i] = surf
 	}
 
+	ans.pos_init()
+	ans.scale_init()
+	ans.visible_init()
+
 	return ans
 }
 
@@ -76,8 +81,6 @@ func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
 	if frame_surf == nil {
 		return nil
 	}
-	fmt.Println("Scale", self.Scale.ValAt(frame))
-	fmt.Println("Visible", self.Visible.ValAt(frame))
 	// Do we really need to draw?
 	if !self.Visible.ValAt(frame) {
 		return nil
@@ -102,11 +105,9 @@ func (self GifSeg) WhichFrame(current_frame float64) int {
 	top := self.TrimEnd - self.TrimStart
 	current_frame_int := int(current_frame) - self.TrimStart
 	if top == 0 {
-		fmt.Println(">frame", self.TrimStart)
 		return self.TrimStart + 0
 	}
 	ans := self.TrimStart + current_frame_int%top
-	fmt.Println("frame", ans)
 	return ans
 }
 
@@ -162,81 +163,26 @@ func ffi_GIF_set_keyframes(call otto.FunctionCall) otto.Value {
 			TrimStart: 0,
 			TrimEnd:   len(gif.Frames) - 1,
 		})
-
-		// Get values for each key frame
-		tmp, err := call.Argument(1).Export()
-		panicOnError(err)
-		obj := make(map[float64]map[string]interface{})
-		for key, val := range tmp.(map[string]interface{}) {
-			key_int, err := strconv.Atoi(key)
-			panicOnError(err)
-			tmp2, ok := val.(map[string]interface{})
-			if ok {
-				obj[float64(key_int)] = tmp2
-			}
-		}
-		// Go in order
-		gif.pos_parse(keys, obj)
-		gif.scale_parse(keys, obj)
-		gif.visible_parse(keys, obj)
-		// for _, key_int := range keys {
-		// 	key := strconv.Itoa(key_int)
-		// 	params := obj[key].(map[string]interface{})
-		// 	i := len(gif.Segs)
-
-		// 	start_time, err := strconv.ParseFloat(key, 64)
-		// 	panicOnError(err)
-
-		// 	new_seg := GifSeg{
-		// 		StartTime: start_time,
-		// 		EndTime:   end_time,
-		// 	}
-		// 	if params["x"] != nil {
-		// 		new_seg.X = NewInterpSeg(
-		// 			start_time,
-		// 			end_time,
-		// 			num2float64(params["x"]),
-		// 			num2float64(params["x"]),
-		// 			nil,
-		// 		)
-		// 		if i != 0 {
-		// 			gif.Segs[i-1].X.EndTime = start_time
-		// 			gif.Segs[i-1].X.EndVal = num2float64(params["x"])
-		// 		}
-		// 	}
-		// 	if params["y"] != nil {
-		// 		new_seg.Y = NewInterpSeg(
-		// 			start_time,
-		// 			end_time,
-		// 			num2float64(params["y"]),
-		// 			num2float64(params["y"]),
-		// 			nil,
-		// 		)
-		// 		if i != 0 {
-		// 			gif.Segs[i-1].Y.EndTime = start_time
-		// 			gif.Segs[i-1].Y.EndVal = num2float64(params["y"])
-		// 		}
-		// 	}
-		// 	if params["scale"] != nil {
-		// 		new_seg.Scale = NewInterpSeg(
-		// 			start_time,
-		// 			end_time,
-		// 			num2float64(params["scale"]),
-		// 			num2float64(params["scale"]),
-		// 			nil,
-		// 		)
-		// 		if i != 0 {
-		// 			gif.Segs[i-1].Scale.EndTime = start_time
-		// 			gif.Segs[i-1].Scale.EndVal = num2float64(params["scale"])
-		// 		}
-		// 	}
-
-		// 	gif.Segs = append(gif.Segs, new_seg)
-		// 	if i != 0 {
-		// 		gif.Segs[i-1].EndTime = start_time
-		// 	}
-		// }
 	}
+
+	// Get values for each key frame
+	tmp, err := call.Argument(1).Export()
+	panicOnError(err)
+	obj := make(map[float64]map[string]interface{})
+	for key, val := range tmp.(map[string]interface{}) {
+		key_int, err := strconv.Atoi(key)
+		panicOnError(err)
+		tmp2, ok := val.(map[string]interface{})
+		if ok {
+			obj[float64(key_int)] = tmp2
+		}
+	}
+	// Go in order
+	gif.pos_parse(keys, obj)
+	gif.scale_parse(keys, obj)
+	gif.visible_parse(keys, obj)
+
+	// TO DO: allow configuration of speed and trim
 
 	return otto.Value{}
 }

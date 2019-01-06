@@ -13,6 +13,23 @@ type VisibleBase struct {
 	Visible MultiInterpᐸboolᐳ
 }
 
+func (self *PositionableBase) pos_init() {
+	self.X.Clear()
+	self.Y.Clear()
+	self.X.Append(InterpSegᐸF64ᐳ{
+		StartFrame: 0,
+		EndFrame:   PosInf,
+		StartVal:   1,
+		EndVal:     1,
+	})
+	self.Y.Append(InterpSegᐸF64ᐳ{
+		StartFrame: 0,
+		EndFrame:   PosInf,
+		StartVal:   1,
+		EndVal:     1,
+	})
+}
+
 func (self *PositionableBase) pos_parse(sorted_keys []float64, key_frame_spec map[float64]map[string]interface{}) {
 	self.X.Clear()
 	self.Y.Clear()
@@ -66,6 +83,16 @@ func (self *PositionableBase) pos_parse(sorted_keys []float64, key_frame_spec ma
 	}
 }
 
+func (self *ScalableBase) scale_init() {
+	self.Scale.Clear()
+	self.Scale.Append(InterpSegᐸF64ᐳ{
+		StartFrame: 0,
+		EndFrame:   PosInf,
+		StartVal:   1,
+		EndVal:     1,
+	})
+}
+
 func (self *ScalableBase) scale_parse(sorted_keys []float64, key_frame_spec map[float64]map[string]interface{}) {
 	self.Scale.Clear()
 	// Ensure default value
@@ -99,6 +126,14 @@ func (self *ScalableBase) scale_parse(sorted_keys []float64, key_frame_spec map[
 			EndVal:     num2float64(params["scale"]),
 		})
 	}
+}
+
+func (self *VisibleBase) visible_init() {
+	self.Visible.Clear()
+	self.Visible.Append(InterpSegᐸboolᐳ{
+		Frame: 0,
+		Val:   true,
+	})
 }
 
 func (self *VisibleBase) visible_parse(sorted_keys []float64, key_frame_spec map[float64]map[string]interface{}) {
