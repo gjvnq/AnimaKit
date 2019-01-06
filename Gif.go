@@ -63,11 +63,11 @@ func NewGIFFromFile(path string) *GIF {
 func (self GIF) Frame(frame float64) *sdl.Surface {
 	for _, seg := range self.Segs {
 		if seg.StartTime <= frame && frame < seg.EndTime {
-			fmt.Println(seg.WhichFrame(frame))
 			return self.Frames[seg.WhichFrame(frame)]
 		}
 	}
-	return nil
+	last_seg := self.Segs[len(self.Segs)-1]
+	return self.Frames[last_seg.WhichFrame(frame)]
 }
 
 func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
@@ -76,6 +76,8 @@ func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
 	if frame_surf == nil {
 		return nil
 	}
+	fmt.Println("Scale", self.Scale.ValAt(frame))
+	fmt.Println("Visible", self.Visible.ValAt(frame))
 	// Do we really need to draw?
 	if !self.Visible.ValAt(frame) {
 		return nil
@@ -94,7 +96,15 @@ type GifSeg struct {
 }
 
 func (self GifSeg) WhichFrame(current_frame float64) int {
-	return 0
+	top := self.TrimEnd - self.TrimStart
+	current_frame_int := int(current_frame) - self.TrimStart
+	if top == 0 {
+		fmt.Println(">frame", self.TrimStart)
+		return self.TrimStart + 0
+	}
+	ans := self.TrimStart + current_frame_int%top
+	fmt.Println("frame", ans)
+	return ans
 }
 
 func get_GIF(id otto.Value) *GIF {
@@ -132,13 +142,13 @@ func ffi_GIF_set_keyframes(call otto.FunctionCall) otto.Value {
 	map_obj := call.Argument(1).Object()
 
 	// Get and sort keys
-	keys := make([]int, 0)
+	keys := make([]float64, 0)
 	for _, key := range map_obj.Keys() {
 		val, err := strconv.Atoi(key)
 		panicOnError(err)
-		keys = append(keys, val)
+		keys = append(keys, float64(val))
 	}
-	sort.Ints(keys)
+	sort.Float64s(keys)
 
 	// Pre add first segment
 	if keys[0] != 0 {
@@ -146,18 +156,20 @@ func ffi_GIF_set_keyframes(call otto.FunctionCall) otto.Value {
 		gif.Segs = append(gif.Segs, GifSeg{
 			StartTime: 0,
 			EndTime:   end_time,
+			TrimStart: 0,
+			TrimEnd:   len(gif.Frames) - 1,
 		})
 
 		// Get values for each key frame
 		tmp, err := call.Argument(1).Export()
 		panicOnError(err)
-		obj := make(map[int]map[string]interface{})
+		obj := make(map[float64]map[string]interface{})
 		for key, val := range tmp.(map[string]interface{}) {
 			key_int, err := strconv.Atoi(key)
 			panicOnError(err)
 			tmp2, ok := val.(map[string]interface{})
 			if ok {
-				obj[key_int] = tmp2
+				obj[float64(key_int)] = tmp2
 			}
 		}
 		// Go in order

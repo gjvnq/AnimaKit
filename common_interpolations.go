@@ -1,5 +1,7 @@
 package AnimaKit
 
+import "fmt"
+
 type PositionableBase struct {
 	X MultiInterpᐸF64ᐳ
 	Y MultiInterpᐸF64ᐳ
@@ -13,7 +15,7 @@ type VisibleBase struct {
 	Visible MultiInterpᐸboolᐳ
 }
 
-func (self *PositionableBase) pos_parse(sorted_keys []int, key_frame_spec map[int]map[string]interface{}) {
+func (self *PositionableBase) pos_parse(sorted_keys []float64, key_frame_spec map[float64]map[string]interface{}) {
 	self.X.Clear()
 	self.Y.Clear()
 	has_defualt_x := false
@@ -42,7 +44,7 @@ func (self *PositionableBase) pos_parse(sorted_keys []int, key_frame_spec map[in
 	}
 }
 
-func (self *ScalableBase) scale_parse(sorted_keys []int, key_frame_spec map[int]map[string]interface{}) {
+func (self *ScalableBase) scale_parse(sorted_keys []float64, key_frame_spec map[float64]map[string]interface{}) {
 	self.Scale.Clear()
 	// Ensure default value
 	has_defualt := false
@@ -58,9 +60,26 @@ func (self *ScalableBase) scale_parse(sorted_keys []int, key_frame_spec map[int]
 			EndVal:     1,
 		})
 	}
+	for _, key := range sorted_keys {
+		params := key_frame_spec[key]
+
+		// Ignore key frames that aren't about us
+		if _, ok := params["scale"]; !ok {
+			continue
+		}
+
+		// Add key frame
+		self.Scale.FixLast(key, num2float64(params["scale"]))
+		self.Scale.Append(InterpSegᐸF64ᐳ{
+			StartFrame: key,
+			EndFrame:   PosInf,
+			StartVal:   num2float64(params["scale"]),
+			EndVal:     num2float64(params["scale"]),
+		})
+	}
 }
 
-func (self *VisibleBase) visible_parse(sorted_keys []int, key_frame_spec map[int]map[string]interface{}) {
+func (self *VisibleBase) visible_parse(sorted_keys []float64, key_frame_spec map[float64]map[string]interface{}) {
 	self.Visible.Clear()
 	// Ensure default value
 	has_defualt := false
@@ -84,8 +103,9 @@ func (self *VisibleBase) visible_parse(sorted_keys []int, key_frame_spec map[int
 
 		// Add key frame
 		self.Visible.Append(InterpSegᐸboolᐳ{
-			Frame: float64(key),
+			Frame: key,
 			Val:   params["visible"].(bool),
 		})
 	}
+	fmt.Println(self.Visible.Segs)
 }

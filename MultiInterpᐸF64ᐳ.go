@@ -6,12 +6,13 @@ type InterpolatorFuncᐸF64ᐳ func(start_frame, end_frame, start_val, end_val, 
 
 func LinearInterpolatorᐸF64ᐳ(start_frame, end_frame, start_val, end_val, at_frame float64) float64 {
 	end_frame = end_frame - start_frame
-	start_frame = 0
 
-	m := (start_val - end_val) / (start_frame - end_frame)
-	b := start_val + m*start_frame
+	m := (start_val - end_val) / (0 - end_frame)
+	b := start_val + m*0
 
+	fmt.Println("at_frame", at_frame, "start_frame", start_frame)
 	at_frame = at_frame - start_frame
+	fmt.Println("at_frame", at_frame)
 	return at_frame*m + b
 }
 
@@ -89,4 +90,12 @@ func (self *MultiInterpᐸF64ᐳ) Clear() {
 
 func (self *MultiInterpᐸF64ᐳ) Append(new_seg InterpSegᐸF64ᐳ) {
 	self.Segs = append(self.Segs, new_seg)
+}
+
+func (self *MultiInterpᐸF64ᐳ) FixLast(end_frame, end_val float64) {
+	if len(self.Segs) == 0 {
+		return
+	}
+	self.Segs[len(self.Segs)-1].EndFrame = end_frame
+	self.Segs[len(self.Segs)-1].EndVal = end_val
 }

@@ -72,14 +72,12 @@ func (self *HiBitStage) DrawOn(frame float64, final_surf *sdl.Surface) error {
 	virtual_surf.FillRect(&self.Rect, color2uint32(self.BG.ValAt(float64(frame))))
 
 	// Draw sprites
-	fmt.Println(self.Sprites)
 	for i, sprite := range self.Sprites {
 		fmt.Printf("Drawing %d of %d\n", i, len(self.Sprites))
-		fmt.Println(i, sprite)
 		err = sprite.DrawOn(frame, virtual_surf)
 		panicOnError(err)
 	}
-	fmt.Println("Finished sprites")
+	fmt.Println("Finished sprites", frame)
 
 	// Copy to output
 	r := RectFitAndCenterInSurf(self.Rect, final_surf)
