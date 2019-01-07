@@ -18,3 +18,9 @@ func mapperGet(id int) interface{} {
 	defer mapperLock.RUnlock()
 	return mapper[id]
 }
+
+func mapperClear() {
+	mapperLock.Lock()
+	mapper = make([]interface{}, 0)
+	mapperLock.Unlock()
+}

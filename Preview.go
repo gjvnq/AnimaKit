@@ -32,6 +32,8 @@ func PreviewWindow() {
 		select {
 		case <-ChangedSignal:
 			TheLog.Notice("Reloading animation")
+			TheAnimation = nil
+			mapperClear()
 			LoadScriptFromFile(ScriptPath)
 			// Watch files again
 			go WatchFiles()
