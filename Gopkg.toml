@@ -3,8 +3,8 @@
 # Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
 # for detailed Gopkg.toml documentation.
 #
-# required = ["github.com/user/thing/cmd/thing"]
-# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+# ignored = ["golang.org/x/sys/unix", "github.com/go-fsnotify/fsnotify"]
+# required = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
 #
 # [[constraint]]
 #   name = "github.com/user/project"
@@ -48,3 +48,7 @@
 [[constraint]]
   name = "github.com/gjvnq/go-logger"
   revision = "1647ae0ecd78fdfbc7c41dbc499eafa3b2a0ffab"
+
+[[constraint]]
+  name = "github.com/radovskyb/watcher"
+  version = "1.0.5"

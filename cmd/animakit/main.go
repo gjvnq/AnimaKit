@@ -14,6 +14,7 @@ var ArgOutputDir string = ""
 var ArgOutputFile string = ""
 var ArgFfmpeg string = "ffmpeg"
 var ArgNWorkers int = 8
+var ArgDebug bool = false
 
 func init() {
 	// Set your program's name and description.  These appear in help output.
@@ -23,6 +24,7 @@ func init() {
 	flaggy.DefaultParser.ShowHelpOnUnexpected = false
 	flaggy.DefaultParser.AdditionalHelpPrepend = "https://github.com/gjvnq/AnimaKit"
 	flaggy.Int(&ArgNWorkers, "n", "n-workers", "Number of parallel rendering workers")
+	flaggy.Bool(&ArgDebug, "", "debug", "Enable debug")
 	flaggy.String(&ArgFfmpeg, "", "ffmpeg", "Path to ffmpeg CLI tool")
 	flaggy.AddPositionalValue(&ArgInput, "input", 1, true, "Animation script file (.js)")
 	flaggy.AddPositionalValue(&ArgOutputDir, "frames-dir", 2, false, "Directory to store the output video frames")
@@ -34,6 +36,10 @@ func main() {
 	// Load SDL and stuff
 	AnimaKit.PreLoad()
 	defer AnimaKit.Quit()
+
+	if !ArgDebug {
+		AnimaKit.TheLog.Levels["DEBUG"] = false
+	}
 
 	// Load animation
 	_, err := AnimaKit.LoadScriptFromFile(ArgInput)

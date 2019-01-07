@@ -8,6 +8,8 @@ import (
 )
 
 func PreviewWindow() {
+	go WatchFiles()
+
 	window, err := sdl.CreateWindow("AnimaKit", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		600, 700, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
 	if err != nil {
@@ -27,6 +29,20 @@ func PreviewWindow() {
 		panic(err)
 	}
 	for running {
+		select {
+		case <-ChangedSignal:
+			TheLog.Notice("Reloading animation")
+			LoadScriptFromFile(ScriptPath)
+			// Watch files again
+			go WatchFiles()
+			// Avoid old key presses causing weird behaviour
+			for event_raw := sdl.PollEvent(); event_raw != nil; event_raw = sdl.PollEvent() {
+			}
+			TheLog.Notice("Reloaded animation")
+			need_to_redraw = true
+		default:
+		}
+
 		for event_raw := sdl.PollEvent(); event_raw != nil; event_raw = sdl.PollEvent() {
 			switch event := event_raw.(type) {
 			case *sdl.QuitEvent:

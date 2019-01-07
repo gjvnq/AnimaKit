@@ -10,17 +10,26 @@ import (
 	"github.com/robertkrimen/otto"
 )
 
-var VM = otto.New()
+var VM *otto.Otto
 var ScriptFolder = ""
+var ScriptPath = ""
 
 func fixPath(path string) string {
 	return filepath.Join(ScriptFolder, path)
 }
 
 func LoadScriptFromFile(path string) (*otto.Otto, error) {
+	VM = otto.New()
+
+	TheAnimation = new(Animation)
+
 	path, err := filepath.Abs(path)
 	panicOnError(err)
 	ScriptFolder = filepath.Dir(path)
+	ScriptPath = path
+
+	// Ensure auto reload
+	AddFileToWatch(path)
 
 	// Load file
 	TheLog.InfoF("Loading animation script from: %s", path)

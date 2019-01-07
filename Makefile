@@ -43,7 +43,7 @@ bindata.go: res/* dep-ensure
 AnimaKit.a: bindata.go *.go dep-ensure
 ifneq ($(FAST_MAKE),1)
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
-	goimports -w .
+	goimports -w *.go
 endif
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)
 	go fmt
@@ -59,7 +59,7 @@ coverage.out: *.go AnimaKit.a
 animakit: AnimaKit.a cmd/animakit/*.go
 ifneq ($(FAST_MAKE),1)
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Fixing imports..."$(ANSI_RESET)
-	cd cmd/animakit && goimports -w .
+	cd cmd/animakit && goimports -w *.go
 endif
 	@$(ECHO) -e $(ANSI_GREEN)"["$@"] Formatting code..."$(ANSI_RESET)
 	cd cmd/animakit && go fmt

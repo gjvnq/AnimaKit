@@ -28,6 +28,9 @@ func NewGIFFromFile(path string) *GIF {
 	defer file.Close()
 	panicOnError(err)
 
+	// Ensure auto reload
+	AddFileToWatch(path)
+
 	rwops := sdl.RWFromFile(path, "r")
 	format := getImgFormat(rwops)
 

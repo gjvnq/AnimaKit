@@ -5,7 +5,7 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-var TheAnimation Animation
+var TheAnimation *Animation
 
 type Animation struct {
 	Rect   sdl.Rect

@@ -79,6 +79,9 @@ func NewImageFromFile(path string) *Image {
 	defer file.Close()
 	panicOnError(err)
 
+	// Ensure auto reload
+	AddFileToWatch(path)
+
 	rwops := sdl.RWFromFile(path, "r")
 	ans := new(Image)
 	ans.src = path
