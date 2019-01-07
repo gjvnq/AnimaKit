@@ -10,9 +10,7 @@ func LinearInterpolatorᐸF64ᐳ(start_frame, end_frame, start_val, end_val, at_
 	m := (start_val - end_val) / (0 - end_frame)
 	b := start_val + m*0
 
-	fmt.Println("at_frame", at_frame, "start_frame", start_frame)
 	at_frame = at_frame - start_frame
-	fmt.Println("at_frame", at_frame)
 	return at_frame*m + b
 }
 
@@ -46,12 +44,6 @@ func (self InterpSegᐸF64ᐳ) ValAt(at_frame float64) float64 {
 	if f == nil {
 		f = LinearInterpolatorᐸF64ᐳ
 	}
-	fmt.Printf("f(%f, %f, %f, %f, %f)\n",
-		self.StartFrame,
-		self.EndFrame,
-		self.StartVal,
-		self.EndVal,
-		at_frame)
 
 	return f(
 		self.StartFrame,

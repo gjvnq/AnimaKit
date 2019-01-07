@@ -110,8 +110,6 @@ func (self Image) DrawOn(frame float64, final_surf *sdl.Surface) error {
 	if frame_surf == nil {
 		return nil
 	}
-	fmt.Println("Img Scale", self.Scale.ValAt(frame))
-	fmt.Println("Img Visible", self.Visible.ValAt(frame))
 	// Do we really need to draw?
 	if !self.Visible.ValAt(frame) {
 		return nil

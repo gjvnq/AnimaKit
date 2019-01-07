@@ -165,10 +165,16 @@ func RectScale(r *sdl.Rect, scale float64) *sdl.Rect {
 func UserPos2SDLPos(out_rect *sdl.Rect, final_surf *sdl.Surface) *sdl.Rect {
 	final_rect := Surface2Rect(final_surf)
 
-	out_rect.X += final_rect.W / 2
-	out_rect.Y += final_rect.H / 2
-	out_rect.X -= out_rect.W / 2
-	out_rect.Y -= out_rect.H / 2
+	fr_w := float64(final_rect.W) / 2
+	fr_h := float64(final_rect.H) / 2
+	or_w := float64(out_rect.W) / 2
+	or_h := float64(out_rect.H) / 2
+
+	ans_x := float64(out_rect.X) + fr_w - or_w
+	ans_y := float64(out_rect.Y) + fr_h - or_h
+
+	out_rect.X = int32(math.Round(ans_x))
+	out_rect.Y = int32(math.Round(ans_y))
 
 	return out_rect
 }
@@ -194,4 +200,14 @@ func num2float64(num interface{}) float64 {
 	default:
 		panic(fmt.Sprintf("Unable to convert %+v (%+v) to float64", num, reflect.TypeOf(num)))
 	}
+}
+
+func limit_byte(val int) byte {
+	if val < 0 {
+		val = 0
+	}
+	if val > 255 {
+		val = 255
+	}
+	return byte(val)
 }

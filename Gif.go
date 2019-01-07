@@ -42,20 +42,28 @@ func NewGIFFromFile(path string) *GIF {
 	ans.src = path
 	ans.Frames = make([]*sdl.Surface, len(gif.Image))
 	for i, frame := range gif.Image {
-		// Copy frame pixel by pixel to an SDL surface
+		// Prepare surface
 		surf, err := sdl.CreateRGBSurfaceWithFormat(
 			0,
 			int32(frame.Rect.Dx()),
 			int32(frame.Rect.Dy()),
 			32,
 			PIXEL_FORMAT)
-
 		panicOnError(err)
+
+		// Copy frame pixel by pixel to an SDL surface
+		pix := surf.Pixels()
 		for x := 0; x < frame.Rect.Dx(); x++ {
 			for y := 0; y < frame.Rect.Dy(); y++ {
-				surf.Set(x, y, frame.At(x, y))
+				i := int32(y)*surf.Pitch + int32(x)*int32(surf.Format.BytesPerPixel)
+				r, g, b, a := frame.At(x, y).RGBA()
+				pix[i+3] = limit_byte(int(a / 0xff))
+				pix[i+2] = limit_byte(int(r / 0xff))
+				pix[i+1] = limit_byte(int(g / 0xff))
+				pix[i+0] = limit_byte(int(b / 0xff))
 			}
 		}
+
 		// Store it surface
 		ans.Frames[i] = surf
 	}
