@@ -115,6 +115,7 @@ type GifSeg struct {
 	TrimEnd   int
 	StartTime float64
 	EndTime   float64
+	Delay     float64 //in frames
 }
 
 func (self GifSeg) WhichFrame(current_frame float64) int {
@@ -123,7 +124,7 @@ func (self GifSeg) WhichFrame(current_frame float64) int {
 	if top == 0 {
 		return self.TrimStart + 0
 	}
-	ans := self.TrimStart + current_frame_int%top
+	ans := self.TrimStart + int(float64(current_frame_int)/self.Delay)%top
 	return ans
 }
 
@@ -201,7 +202,15 @@ func ffi_GIF_set_keyframes(call otto.FunctionCall) otto.Value {
 	gif.scale_parse(keys, obj)
 	gif.visible_parse(keys, obj)
 
-	// TO DO: allow configuration of speed and trim
+	// "Provisory" hack
+	gif.Segs = make([]GifSeg, 1)
+	gif.Segs[0] = GifSeg{
+		TrimStart: 0,
+		TrimEnd:   len(gif.Frames),
+		StartTime: 0,
+		EndTime:   PosInf,
+		Delay:     0.1 * TheAnimation.FPS,
+	}
 
 	return otto.Value{}
 }
