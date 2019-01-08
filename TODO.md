@@ -1,3 +1,4 @@
+  - [ ] Add sound support
   - [ ] Support GIF frame trim and speed configuration
   - [ ] Support image trim
   - [ ] Add typewriter element

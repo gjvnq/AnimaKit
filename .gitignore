@@ -1,5 +1,7 @@
 bindata.go
 cmd/AnimaKit
+AnimaKit
+animakit
 *.o
 *.a
 out/
