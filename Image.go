@@ -88,7 +88,7 @@ func NewImageFromFile(path string) *Image {
 	err = nil
 	switch getImgFormat(rwops) {
 	case IMG_GIF:
-		panic("GIFs are a special case. Use: new GIF(file)")
+		ans.Surface, err = sdlImg.LoadGIFRW(rwops)
 	case IMG_BMP:
 		ans.Surface, err = sdlImg.LoadBMPRW(rwops)
 	case IMG_PNG:
