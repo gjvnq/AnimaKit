@@ -78,21 +78,23 @@ func NewGIFFromFile(path string) *GIF {
 	return ans
 }
 
-func (self GIF) Frame(frame float64) *sdl.Surface {
+func (self GIF) Frame(frame float64) (*sdl.Surface, int) {
 	for _, seg := range self.Segs {
 		if seg.StartTime <= frame && frame < seg.EndTime {
-			return self.Frames[seg.WhichFrame(frame)]
+			ans := seg.WhichFrame(frame)
+			return self.Frames[ans], ans
 		}
 	}
 	if len(self.Segs) > 0 {
 		last_seg := self.Segs[len(self.Segs)-1]
-		return self.Frames[last_seg.WhichFrame(frame)]
+		ans := last_seg.WhichFrame(frame)
+		return self.Frames[ans], ans
 	}
-	return self.Frames[0]
+	return self.Frames[0], 0
 }
 
 func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
-	frame_surf := self.Frame(frame)
+	frame_surf, _ := self.Frame(frame)
 	// Do we even have something to draw?
 	if frame_surf == nil {
 		return nil
@@ -112,19 +114,28 @@ func (self GIF) DrawOn(frame float64, final_surf *sdl.Surface) error {
 type GifSeg struct {
 	// Both trims are inclusive
 	TrimStart int
-	TrimEnd   int
+	TrimStop  int
 	StartTime float64
 	EndTime   float64
 	Delay     float64 //in frames
 }
 
 func (self GifSeg) WhichFrame(current_frame float64) int {
-	top := self.TrimEnd - self.TrimStart
+	top := self.TrimStop - self.TrimStart
 	current_frame_int := int(current_frame) - self.TrimStart
 	if top == 0 {
 		return self.TrimStart + 0
 	}
 	ans := self.TrimStart + int(float64(current_frame_int)/self.Delay)%top
+
+	// Safety
+	if ans < self.TrimStart {
+		ans = self.TrimStart
+	}
+	if ans > self.TrimStop {
+		ans = self.TrimStop
+	}
+
 	return ans
 }
 
@@ -166,51 +177,101 @@ func ffi_GIF_set_keyframes(call otto.FunctionCall) otto.Value {
 	defer TheLog.DebugF("[FINISHED] Setting keyframes for GIF(%s)", gif.src)
 
 	// Get and sort keys
-	keys := make([]float64, 0)
+	sorted_keys := make([]float64, 0)
 	for _, key := range map_obj.Keys() {
 		val, err := strconv.Atoi(key)
 		panicOnError(err)
-		keys = append(keys, float64(val))
+		sorted_keys = append(sorted_keys, float64(val))
 	}
-	sort.Float64s(keys)
+	sort.Float64s(sorted_keys)
 
 	// Pre add first segment
-	if keys[0] != 0 {
+	if sorted_keys[0] != 0 {
 		end_time := float64(TheAnimation.Frames)
 		gif.Segs = append(gif.Segs, GifSeg{
 			StartTime: 0,
 			EndTime:   end_time,
 			TrimStart: 0,
-			TrimEnd:   len(gif.Frames) - 1,
+			TrimStop:  len(gif.Frames) - 1,
 		})
 	}
 
 	// Get values for each key frame
 	tmp, err := call.Argument(1).Export()
 	panicOnError(err)
-	obj := make(map[float64]map[string]interface{})
+	key_frame_spec := make(map[float64]map[string]interface{})
 	for key, val := range tmp.(map[string]interface{}) {
 		key_int, err := strconv.Atoi(key)
 		panicOnError(err)
 		tmp2, ok := val.(map[string]interface{})
 		if ok {
-			obj[float64(key_int)] = tmp2
+			key_frame_spec[float64(key_int)] = tmp2
 		}
 	}
 	// Go in order
-	gif.pos_parse(keys, obj)
-	gif.scale_parse(keys, obj)
-	gif.visible_parse(keys, obj)
+	gif.pos_parse(sorted_keys, key_frame_spec)
+	gif.scale_parse(sorted_keys, key_frame_spec)
+	gif.visible_parse(sorted_keys, key_frame_spec)
 
-	// "Provisory" hack
-	gif.Segs = make([]GifSeg, 1)
-	gif.Segs[0] = GifSeg{
-		TrimStart: 0,
-		TrimEnd:   len(gif.Frames),
-		StartTime: 0,
-		EndTime:   PosInf,
-		Delay:     0.1 * TheAnimation.FPS,
+	// Ensure default value
+	has_defualt := false
+	if sorted_keys[0] == 0 {
+		_, has_defualt = key_frame_spec[0]["gif"]
 	}
+	gif.Segs = make([]GifSeg, 0)
+	if !has_defualt {
+		gif.Segs = make([]GifSeg, 1)
+		gif.Segs = append(gif.Segs, GifSeg{
+			TrimStart: 0,
+			TrimStop:  len(gif.Frames),
+			StartTime: 0,
+			EndTime:   PosInf,
+			Delay:     0.1 * TheAnimation.FPS,
+		})
+	}
+	for _, key := range sorted_keys {
+		params := key_frame_spec[key]
+
+		// Ignore key frames that aren't about us
+		if _, ok := params["gif"]; !ok {
+			continue
+		}
+
+		// Load info
+		params = params["gif"].(map[string]interface{})
+
+		trim_start := 0
+		if val, ok := params["trim_start"]; ok {
+			trim_start = num2int(val)
+		}
+		trim_stop := len(gif.Frames)
+		if val, ok := params["trim_stop"]; ok {
+			trim_stop = num2int(val)
+		}
+		delay := 0.1 * TheAnimation.FPS
+		if val, ok := params["delay"]; ok {
+			delay = num2float64(val)
+		}
+
+		// Safety
+		if delay <= 0 {
+			delay = PosInf
+		}
+
+		// Add key frame
+		if len(gif.Segs) > 1 {
+			gif.Segs[len(gif.Segs)-1].EndTime = key
+		}
+		gif.Segs = append(gif.Segs, GifSeg{
+			TrimStart: trim_start,
+			TrimStop:  trim_stop,
+			StartTime: key,
+			EndTime:   PosInf,
+			Delay:     delay,
+		})
+		TheLog.DebugF("at frame %0.f: %#+v", key, gif.Segs[len(gif.Segs)-1])
+	}
+	TheLog.DebugF("gif.Segs: %#+v", gif.Segs)
 
 	return otto.Value{}
 }

@@ -14,6 +14,10 @@ func LinearInterpolatorᐸF64ᐳ(start_frame, end_frame, start_val, end_val, at_
 	return at_frame*m + b
 }
 
+func DiscreteInterpolatorᐸF64ᐳ(start_frame, end_frame, start_val, end_val, at_frame float64) float64 {
+	return start_val
+}
+
 type InterpSegᐸF64ᐳ struct {
 	StartVal   float64
 	EndVal     float64
@@ -72,8 +76,8 @@ func (self MultiInterpᐸF64ᐳ) ValAt(at_frame float64) float64 {
 			return this.ValAt(at_frame)
 		}
 	}
-	// Returns the last segment as it is the best option avaliable
-	return self.Segs[len(self.Segs)-1].ValAt(at_frame)
+	// Returns the last segment last value as it is the best option avaliable
+	return self.Segs[len(self.Segs)-1].EndVal
 }
 
 func (self *MultiInterpᐸF64ᐳ) Clear() {
@@ -90,4 +94,46 @@ func (self *MultiInterpᐸF64ᐳ) FixLast(end_frame, end_val float64) {
 	}
 	self.Segs[len(self.Segs)-1].EndFrame = end_frame
 	self.Segs[len(self.Segs)-1].EndVal = end_val
+}
+
+func (self *MultiInterpᐸF64ᐳ) Parse(property string, default_val float64, interp_func InterpolatorFuncᐸF64ᐳ, sorted_keys []float64, key_frame_spec map[float64]map[string]interface{}) {
+	TheLog.DebugF("interp_f64_parse %d keys (%s)", len(sorted_keys), property)
+	defer TheLog.DebugF("[FINISHED] interp_f64_parse %d keys", len(sorted_keys))
+
+	self.Clear()
+	// Ensure default value
+	has_defualt := false
+	if sorted_keys[0] == 0 {
+		_, has_defualt = key_frame_spec[0][property]
+	}
+	if !has_defualt {
+		has_defualt = true
+		self.Append(InterpSegᐸF64ᐳ{
+			StartFrame: 0,
+			EndFrame:   PosInf,
+			StartVal:   default_val,
+			EndVal:     default_val,
+			InterpFunc: interp_func,
+		})
+	}
+	for _, key := range sorted_keys {
+		params := key_frame_spec[key]
+
+		// Ignore key frames that aren't about us
+		if _, ok := params[property]; !ok {
+			continue
+		}
+
+		// Add key frame
+		TheLog.DebugF("property %s = %f at frame %.0f Full params: %#+v", property, num2float64(params[property]), key, params)
+		self.FixLast(key, num2float64(params[property]))
+		self.Append(InterpSegᐸF64ᐳ{
+			StartFrame: key,
+			EndFrame:   key,
+			StartVal:   num2float64(params[property]),
+			EndVal:     num2float64(params[property]),
+			InterpFunc: interp_func,
+		})
+	}
+	TheLog.DebugF("interp_f64_parse.Segs: %#+v", self.Segs)
 }

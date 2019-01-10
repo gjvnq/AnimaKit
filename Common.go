@@ -16,7 +16,7 @@ import (
 	"github.com/veandco/go-sdl2/ttf"
 )
 
-const VERSION = "0.1.2-dev"
+const VERSION = "0.1.3"
 
 // const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
 const PIXEL_FORMAT = sdl.PIXELFORMAT_ARGB8888
@@ -199,6 +199,21 @@ func num2float64(num interface{}) float64 {
 		return val
 	default:
 		panic(fmt.Sprintf("Unable to convert %+v (%+v) to float64", num, reflect.TypeOf(num)))
+	}
+}
+
+func num2int(num interface{}) int {
+	switch val := num.(type) {
+	case int:
+		return val
+	case int64:
+		return int(val)
+	case float32:
+		return int(val)
+	case float64:
+		return int(val)
+	default:
+		panic(fmt.Sprintf("Unable to convert %+v (%+v) to int", num, reflect.TypeOf(num)))
 	}
 }
 
